@@ -1,31 +1,12 @@
 import type { Experience } from "./types";
 
-// Most-recent / strongest first. Be Educated leads (production, live).
+// Display order set by Devansh: IIT BHU → ImpactBridge → Be Educated (freelance).
 export const experience: Experience[] = [
-  {
-    slug: "be-educated",
-    company: "Be Educated",
-    role: "Founding Engineer",
-    url: "https://beeducated.co.in",
-    period: "2024 — Present",
-    location: "Remote · Part-time",
-    status: "live",
-    badge: "Live",
-    summary:
-      "Solo-built a production ed-tech LMS — Razorpay payments with webhook verification, Clerk RBAC across 4 dashboards, a full exam engine, and 50+ REST APIs.",
-    bullets: [
-      "Built a full ed-tech LMS solo, in production with real users.",
-      "Integrated Razorpay payments with webhook signature verification for trustworthy payment state.",
-      "Clerk authentication with role-based access control (RBAC) across 4 dashboards.",
-      "Designed a full online exam engine and shipped 50+ REST APIs.",
-      "Part-time alongside coursework.",
-    ],
-  },
   {
     slug: "iit-bhu",
     company: "IIT BHU",
     role: "Summer Research Intern",
-    period: "Summer 2025",
+    period: "May–July 2026",
     location: "Varanasi, India",
     status: "research",
     badge: "Research",
@@ -41,16 +22,35 @@ export const experience: Experience[] = [
   },
   {
     // ⚠️ CONTENT PENDING (§4): Devansh to supply the role + responsibilities.
-    // Render gracefully as a "details coming" state — do NOT invent anything.
+    // Renders gracefully as a "details coming" state — do NOT invent anything.
     slug: "impactbridge",
     company: "ImpactBridge",
     role: "",
-    period: "2025",
-    location: "—",
+    period: "April–July 2026",
+    location: "Part-time",
     status: "pending",
     badge: "Pending",
     pending: true,
     summary: "Details coming soon.",
     bullets: [],
+  },
+  {
+    slug: "be-educated",
+    company: "Be Educated",
+    role: "Freelance Engineer",
+    url: "https://beeducated.co.in",
+    period: "Dec 2025 – Feb 2026",
+    location: "Freelance · Remote",
+    status: "live",
+    badge: "Live",
+    summary:
+      "Solo-built a production coaching-institute LMS — Cashfree payments with webhook verification, role-scoped access via Supabase RLS, and a SQL-graded exam engine.",
+    bullets: [
+      "Built a full coaching-institute LMS solo (JEE/NEET prep), in production with real users.",
+      "Cashfree payments with webhook signature verification for trustworthy enrollment activation.",
+      "Clerk auth with role-scoped access (admin, student, parent, teacher, batch_manager) enforced via Supabase RLS.",
+      "Exam engine with SQL auto-grading (MCQ, true/false, numerical with tolerance) and server-side auto-submit.",
+      "Automated fee reminders via a node-cron escalation ladder.",
+    ],
   },
 ];
