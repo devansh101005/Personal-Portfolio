@@ -1,0 +1,13 @@
+// Cloudflare Workers (static assets) config — only used if the site is
+// deployed through the Workers flow (`npx wrangler deploy`). It serves the
+// static export in /out; no Worker code runs. `public/_headers` is honoured.
+// (Cloudflare Pages ignores this file: it has no `pages_build_output_dir`.)
+{
+  "name": "devansh",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}
