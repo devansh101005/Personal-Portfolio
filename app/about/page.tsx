@@ -9,7 +9,7 @@ import { education } from "@/content";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "About Devansh, a full-stack engineer (Shiv Nadar University, B.Tech CSE '27) who works across backend and ML/deep learning, and is now getting into distributed systems.",
+    "About Devansh, a full-stack engineer (B.Tech CSE '27) who works across backend and ML/deep learning, and is now getting into distributed systems.",
   alternates: { canonical: "/about" },
   openGraph: {
     title: "About · Devansh",
@@ -21,7 +21,8 @@ export const metadata: Metadata = {
 };
 
 // One quiet line instead of the old PROFILE card (removed at Devansh's request).
-const facts = [`B.Tech CSE · ${education.school}`, `Class of ${education.classOf}`];
+// College name intentionally not shown (privacy, Devansh Sep 2026).
+const facts = ["B.Tech CSE", `Class of ${education.classOf}`];
 
 export default function AboutPage() {
   return (

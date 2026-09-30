@@ -19,7 +19,7 @@ export default async function Image() {
     loadGoogleFont(
       "JetBrains Mono",
       500,
-      "DEVANSH / PORTFOLIO Dv. SHIV NADAR UNIVERSITY · B.TECH CSE '27"
+      "DEVANSH / PORTFOLIO Dv. B.TECH CSE '27 · BACKEND · ML/DL"
     ),
   ]);
   const serifFamily = serif ? "Fraunces" : "serif";
@@ -80,7 +80,7 @@ export default async function Image() {
           }}
         >
           <span style={{ display: "flex", width: 44, height: 3, background: OG.accent }} />
-          SHIV NADAR UNIVERSITY · B.TECH CSE &#39;27
+          B.TECH CSE &#39;27 · BACKEND · ML/DL
         </div>
       </div>
     ),

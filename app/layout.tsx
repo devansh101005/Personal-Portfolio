@@ -65,7 +65,6 @@ const personLd = {
   name: SITE.name,
   url: SITE_URL,
   jobTitle: SITE.jobTitle,
-  alumniOf: { "@type": "CollegeOrUniversity", name: SITE.university },
   sameAs: [SOCIALS.github, SOCIALS.linkedin, SOCIALS.hashnode].filter(
     (u) => u && u !== "#"
   ),

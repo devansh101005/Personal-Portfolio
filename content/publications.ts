@@ -15,14 +15,15 @@ export const publications: Publication[] = [
     title:
       "LightDep: Knowledge-Distilled Multimodal Depression Screening for Mobile and Edge Devices",
     authors: [
-      { name: "Devansh Pandey", me: true, equal: true, aff: [1] },
-      { name: "Prateek Goyal", equal: true, aff: [1] },
-      { name: "Amit Vishwakarma", title: "Dr.", aff: [2] },
-      { name: "Arijit Roy", title: "Dr.", aff: [3] },
-      { name: "Om Jee Pandey", title: "Dr.", aff: [4] },
+      { name: "Devansh Pandey", me: true, equal: true },
+      { name: "Prateek Goyal", equal: true },
+      { name: "Amit Vishwakarma", title: "Dr.", aff: [1] },
+      { name: "Arijit Roy", title: "Dr.", aff: [2] },
+      { name: "Om Jee Pandey", title: "Dr.", aff: [3] },
     ],
     // From the EDAS author block (Arijit Roy: IIT Patna & SensorDrops Networks).
-    affiliations: ["Shiv Nadar University", "IIITDM Jabalpur", "IIT Patna", "IIT BHU"],
+    // Devansh's own college is intentionally left off (privacy).
+    affiliations: ["IIITDM Jabalpur", "IIT Patna", "IIT BHU"],
     venue:
       "IEEE International Conference on Advanced Networks and Telecommunications Systems (ANTS)",
     venueShort: "IEEE ANTS 2026",
@@ -47,15 +48,14 @@ export const publications: Publication[] = [
     title:
       "Structure-Aware Drug–Target Interaction Prediction via Pretrained Language Models and Cross-Attention Fusion",
     authors: [
-      { name: "Srajal Tiwari", aff: [1] },
-      { name: "Dolly Sharma", title: "Dr.", aff: [1] },
-      { name: "Prateek Goyal", aff: [1] },
-      { name: "Devansh Pandey", me: true, aff: [1] },
-      { name: "Anamika Pal", aff: [1] },
-      { name: "Abhinav Bachchas", aff: [1] },
+      { name: "Srajal Tiwari" },
+      { name: "Dolly Sharma", title: "Dr." },
+      { name: "Prateek Goyal" },
+      { name: "Devansh Pandey", me: true },
+      { name: "Anamika Pal" },
+      { name: "Abhinav Bachchas" },
     ],
-    // All six authors are from Shiv Nadar University (confirmed by Devansh).
-    affiliations: ["Shiv Nadar University"],
+    // All six authors share Devansh's college; not shown (privacy).
     venue: "IEEE Region 10 Conference (TENCON)",
     venueShort: "IEEE TENCON 2026",
     status: "accepted",

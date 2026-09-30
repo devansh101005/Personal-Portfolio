@@ -1,6 +1,6 @@
 # Devansh — Portfolio
 
-Personal portfolio + personal-brand site for **Devansh** (B.Tech CSE '27, Shiv Nadar University). Editorial / print-magazine aesthetic, light-mode-first with a dark toggle, one terracotta accent. Built to (1) convince a recruiter this is production-grade engineering and (2) share cleanly as a link with a good preview card.
+Personal portfolio + personal-brand site for **Devansh** (B.Tech CSE '27). Editorial / print-magazine aesthetic, light-mode-first with a dark toggle, one terracotta accent. Built to (1) convince a recruiter this is production-grade engineering and (2) share cleanly as a link with a good preview card.
 
 **Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS 3 · deployed on Vercel. Every route is statically prerendered.
 

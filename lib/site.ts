@@ -11,9 +11,8 @@ export const SITE = {
   monogram: "Dv.",
   title: "Devansh · Full-stack Engineer",
   description:
-    "Devansh is a full-stack engineer (Shiv Nadar University, B.Tech CSE '27) working across backend, ML and deep learning, and now getting into distributed systems. Next.js, backend, ML.",
+    "Devansh is a full-stack engineer (B.Tech CSE '27) working across backend, ML and deep learning, and now getting into distributed systems. Next.js, backend, ML.",
   jobTitle: "Full-stack Engineer",
-  university: "Shiv Nadar University",
 } as const;
 
 export const NAV: { href: string; label: string }[] = [
