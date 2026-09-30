@@ -9,9 +9,9 @@ export const SITE_URL =
 export const SITE = {
   name: "Devansh",
   monogram: "Dv.",
-  title: "Devansh — Full-stack Engineer",
+  title: "Devansh · Full-stack Engineer",
   description:
-    "Devansh — full-stack engineer (Shiv Nadar University, B.Tech CSE '27) building production systems, with growing depth in ML research. Next.js, backend, ML.",
+    "Devansh is a full-stack engineer (Shiv Nadar University, B.Tech CSE '27) working across backend, ML and deep learning, and now getting into distributed systems. Next.js, backend, ML.",
   jobTitle: "Full-stack Engineer",
   university: "Shiv Nadar University",
 } as const;
@@ -20,6 +20,7 @@ export const NAV: { href: string; label: string }[] = [
   { href: "/about", label: "About" },
   { href: "/experience", label: "Experience" },
   { href: "/projects", label: "Projects" },
+  { href: "/research", label: "Research" },
   { href: "/blog", label: "Blog" },
   { href: "/resume", label: "Resume" },
   { href: "/contact", label: "Contact" },
@@ -30,14 +31,12 @@ export const NAV: { href: string; label: string }[] = [
 export const SOCIALS = {
   email: profile.email,
   github: profile.socials.github,
-  twitter: profile.socials.twitter,
   linkedin: profile.socials.linkedin,
   hashnode: profile.socials.hashnode,
 } as const;
 
 export const FOOTER_SOCIALS: { label: string; href: string }[] = [
   { label: "GitHub", href: SOCIALS.github },
-  { label: "Twitter", href: SOCIALS.twitter },
   { label: "LinkedIn", href: SOCIALS.linkedin },
   { label: "Hashnode", href: SOCIALS.hashnode },
 ];

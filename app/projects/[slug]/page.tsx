@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import TagList from "@/components/TagList";
-import { projects, getProject } from "@/content";
-import type { ProjectGroup } from "@/content/types";
+import Reveal from "@/components/Reveal";
+import ProjectCover from "@/components/ProjectCover";
+import { projects, getProject, getPublicationForProject } from "@/content";
+import type { ProjectGroup, ProjectImage, ProjectStatus } from "@/content/types";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -12,6 +14,12 @@ const groupLabel: Record<ProjectGroup, string> = {
   experiment: "Experiment",
   "personal-tool": "Personal tool",
   guided: "Guided build",
+};
+
+const statusLabel: Record<ProjectStatus, string> = {
+  live: "Live",
+  built: "Built",
+  "in-progress": "In progress",
 };
 
 export function generateStaticParams() {
@@ -24,7 +32,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!p) return {};
   const url = `/projects/${p.slug}`;
   const description =
-    p.oneLiner || p.overview || `${p.name} — a ${p.domainTag} project by Devansh.`;
+    p.oneLiner || p.overview || `${p.name}, a ${p.domainTag} project by Devansh.`;
   return {
     title: p.name,
     description,
@@ -46,11 +54,30 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <section className="border-t border-line py-12">
-      <h2 className="mb-5 font-mono text-[11.5px] uppercase tracking-[0.16em] text-accent">
+      <Reveal as="h2" variant="wipe" className="mb-5 font-mono text-[11.5px] uppercase tracking-[0.16em] text-accent">
         {label}
-      </h2>
-      {children}
+      </Reveal>
+      <Reveal>{children}</Reveal>
     </section>
+  );
+}
+
+function GalleryItem({ img, i }: { img: ProjectImage; i: number }) {
+  const figure = img.kind === "figure";
+  return (
+    <Reveal as="figure" variant={i % 2 ? "right" : "left"} className="m-0">
+      <div
+        className={`overflow-hidden rounded-lg border border-line ${figure ? "plate p-4 sm:p-6" : "bg-bg"}`}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={img.src} alt={img.alt} loading="lazy" className="block h-auto w-full" />
+      </div>
+      {img.caption && (
+        <figcaption className="mt-3 max-w-[60ch] font-mono text-[11.5px] leading-relaxed text-muted">
+          {img.caption}
+        </figcaption>
+      )}
+    </Reveal>
   );
 }
 
@@ -106,8 +133,10 @@ export default async function ProjectDetail({ params }: Params) {
   const next = idx < projects.length - 1 ? projects[idx + 1] : undefined;
 
   const hasGithub = Boolean(p.githubUrl && p.githubUrl !== "#");
+  const paper = getPublicationForProject(p.slug);
   const hasDetail = Boolean(
-    p.overview ||
+    (p.highlights && p.highlights.length) ||
+      p.overview ||
       p.problem ||
       p.approach ||
       (p.architecture && p.architecture.length) ||
@@ -119,7 +148,7 @@ export default async function ProjectDetail({ params }: Params) {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     name: p.name,
-    description: p.oneLiner || `${p.name} — ${p.domainTag}`,
+    description: p.oneLiner || `${p.name} (${p.domainTag})`,
     ...(p.stack.length ? { programmingLanguage: p.stack } : {}),
     author: { "@type": "Person", name: "Devansh" },
     ...(hasGithub ? { codeRepository: p.githubUrl } : {}),
@@ -137,7 +166,7 @@ export default async function ProjectDetail({ params }: Params) {
         <div className="mb-4 flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
           <span className="text-accent">{p.domainTag}</span>
           <span>· {groupLabel[p.group]}</span>
-          {p.status && <span>· {p.status}</span>}
+          {p.status && <span>· {statusLabel[p.status]}</span>}
           {p.period && <span>· {p.period}</span>}
         </div>
         <h1 className="font-display text-[clamp(40px,7vw,76px)] font-black leading-[0.98] tracking-[-0.02em]">
@@ -148,6 +177,18 @@ export default async function ProjectDetail({ params }: Params) {
             {p.oneLiner}
           </p>
         )}
+        {paper && (
+          <Link
+            href={`/research#${paper.slug}`}
+            className="group mt-6 inline-flex items-center gap-2.5 font-mono text-[11.5px] uppercase tracking-[0.08em] text-muted transition-colors hover:text-accent"
+          >
+            <span className="rounded-full border border-line bg-accent-soft px-2 py-[3px] text-[10px] text-accent">
+              Paper
+            </span>
+            {paper.status === "accepted" ? "Accepted at " : "Published at "}
+            {paper.venueShort} →
+          </Link>
+        )}
         {(hasGithub || p.liveUrl) && (
           <div className="mt-7 flex flex-wrap gap-3">
             {p.liveUrl && <ProjectLink href={p.liveUrl} label="Live ↗" />}
@@ -156,8 +197,26 @@ export default async function ProjectDetail({ params }: Params) {
         )}
       </header>
 
+      {(p.image || p.diagram) && (
+        <Reveal variant="zoom" as="figure" className="dg-live m-0 py-12">
+          <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-line bg-bg">
+            <ProjectCover p={p} sizes="(min-width: 1080px) 1016px, 100vw" priority />
+          </div>
+          {p.image?.caption && (
+            <figcaption className="mt-3 font-mono text-[11.5px] text-muted">
+              {p.image.caption}
+            </figcaption>
+          )}
+        </Reveal>
+      )}
+
       {hasDetail ? (
         <>
+          {p.highlights && p.highlights.length > 0 && (
+            <Section label="Highlights">
+              <Bullets items={p.highlights} />
+            </Section>
+          )}
           {p.overview && (
             <Section label="Overview">
               <p className="max-w-[64ch] whitespace-pre-line text-[17px] leading-relaxed">
@@ -167,12 +226,12 @@ export default async function ProjectDetail({ params }: Params) {
           )}
           {p.problem && (
             <Section label="Problem">
-              <p className="max-w-[64ch] text-[17px] leading-relaxed">{inline(p.problem)}</p>
+              <p className="max-w-[64ch] whitespace-pre-line text-[17px] leading-relaxed">{inline(p.problem)}</p>
             </Section>
           )}
           {p.approach && (
             <Section label="Approach">
-              <p className="max-w-[64ch] text-[17px] leading-relaxed">{inline(p.approach)}</p>
+              <p className="max-w-[64ch] whitespace-pre-line text-[17px] leading-relaxed">{inline(p.approach)}</p>
             </Section>
           )}
           {p.architecture && p.architecture.length > 0 && (
@@ -187,20 +246,14 @@ export default async function ProjectDetail({ params }: Params) {
           )}
           {p.outcomes && (
             <Section label="Outcomes">
-              <p className="max-w-[64ch] text-[17px] leading-relaxed">{inline(p.outcomes)}</p>
+              <p className="max-w-[64ch] whitespace-pre-line text-[17px] leading-relaxed">{inline(p.outcomes)}</p>
             </Section>
           )}
           {p.gallery && p.gallery.length > 0 && (
             <Section label="Gallery">
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {p.gallery.map((src) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    key={src}
-                    src={src}
-                    alt={`${p.name} screenshot`}
-                    className="aspect-[16/9] w-full rounded-lg border border-line object-cover"
-                  />
+              <div className="grid grid-cols-1 items-start gap-x-6 gap-y-10 sm:grid-cols-2">
+                {p.gallery.map((img, i) => (
+                  <GalleryItem key={img.src} img={img} i={i} />
                 ))}
               </div>
             </Section>

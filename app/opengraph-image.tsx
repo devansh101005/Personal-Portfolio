@@ -1,7 +1,10 @@
 import { ImageResponse } from "next/og";
 import { loadGoogleFont, OG } from "@/lib/og";
 
-export const alt = "Devansh — Full-stack Engineer";
+// Static export (Cloudflare Pages): generated once at build time.
+export const dynamic = "force-static";
+
+export const alt = "Devansh · Full-stack Engineer";
 export const size = OG.size;
 export const contentType = OG.contentType;
 
@@ -11,7 +14,7 @@ export default async function Image() {
     loadGoogleFont(
       "Fraunces",
       900,
-      "Devansh. Full-stack engineer building production systems, with growing depth in ML research."
+      "Devansh. Engineer working across backend, ML and deep learning."
     ),
     loadGoogleFont(
       "JetBrains Mono",
@@ -62,8 +65,7 @@ export default async function Image() {
             <span style={{ color: OG.accent }}>.</span>
           </div>
           <div style={{ display: "flex", maxWidth: 940, marginTop: 24, fontSize: 40, lineHeight: 1.3 }}>
-            Full-stack engineer building production systems, with growing depth in
-            ML research.
+            Engineer working across backend, ML and deep learning.
           </div>
         </div>
 

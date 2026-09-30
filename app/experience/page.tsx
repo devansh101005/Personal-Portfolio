@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Eyebrow from "@/components/Eyebrow";
+import CompanyLogo from "@/components/CompanyLogo";
 import StatusBadge from "@/components/StatusBadge";
 import type { Experience } from "@/content/types";
 import { experience } from "@/content";
@@ -7,12 +8,12 @@ import { experience } from "@/content";
 export const metadata: Metadata = {
   title: "Experience",
   description:
-    "Devansh's work history — Founding Engineer at Be Educated (production LMS), Summer Research Intern at IIT BHU (model distillation), and ImpactBridge.",
+    "Devansh's work history: Summer Research Intern at IIT BHU (LightDep, IEEE ANTS 2026), freelance engineer for Be Educated, and Web Developer Intern at ImpactBridge.",
   alternates: { canonical: "/experience" },
   openGraph: {
     title: "Experience · Devansh",
     description:
-      "Production engineering at Be Educated, research at IIT BHU, and more.",
+      "Research at IIT BHU, freelance work for Be Educated, and an internship at ImpactBridge.",
     url: "/experience",
     images: ["/opengraph-image"],
   },
@@ -20,8 +21,10 @@ export const metadata: Metadata = {
 
 function ExperienceDetail({ e }: { e: Experience }) {
   return (
-    <article className="grid grid-cols-1 gap-6 border-t border-line py-10 last:border-b sm:grid-cols-[1fr_auto] sm:items-start">
-      <div>
+    <article className="group grid grid-cols-1 gap-6 border-t border-line py-10 last:border-b sm:grid-cols-[1fr_auto] sm:items-start">
+      <div className="flex gap-5">
+        {e.logo && <CompanyLogo src={e.logo} alt={`${e.company} logo`} size={54} />}
+        <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="font-display text-[26px] font-semibold tracking-[-0.01em]">
             {e.company}
@@ -52,6 +55,7 @@ function ExperienceDetail({ e }: { e: Experience }) {
         ) : (
           <p className="mt-4 italic text-muted">Details coming soon.</p>
         )}
+        </div>
       </div>
 
       <div className="whitespace-nowrap text-left sm:text-right">
@@ -68,11 +72,11 @@ export default function ExperiencePage() {
       <header className="mb-8">
         <Eyebrow icon="experience" label="Experience" />
         <h1 className="font-display text-[clamp(44px,8vw,84px)] font-black leading-[0.98] tracking-[-0.02em]">
-          Where I&apos;ve shipped<span className="text-accent">.</span>
+          Where I&apos;ve shipped<span className="text-accent-fill">.</span>
         </h1>
         <p className="mt-4 max-w-[60ch] text-[15.5px] text-muted">
-          Three roles — production engineering, funded research, and an
-          internship in progress.
+          Research at IIT BHU, freelance work for a coaching institute, and a
+          part-time internship at ImpactBridge.
         </p>
       </header>
 

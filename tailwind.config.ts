@@ -21,6 +21,12 @@ const config: Config = {
         "line-strong": "var(--border-strong)",
         accent: "var(--accent)",
         "accent-soft": "var(--accent-soft)",
+        // Large decorative glyphs (the "." in Devansh. etc.) keep the brand hex.
+        "accent-fill": "var(--accent)",
+      },
+      // `text-accent` uses the AA-safe text shade; bg-/border-accent keep --accent.
+      textColor: {
+        accent: "var(--accent-ink)",
       },
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],

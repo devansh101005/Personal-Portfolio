@@ -1,0 +1,17 @@
+# The site is a static export, so the GitHub contribution heatmap is baked in
+# at build time. This rebuilds the Cloudflare Pages site once a day to keep it
+# fresh. Needs one repo secret: CF_PAGES_DEPLOY_HOOK (Pages → Settings →
+# Builds & deployments → Deploy hooks).
+name: Nightly rebuild
+
+on:
+  schedule:
+    - cron: "30 20 * * *" # 20:30 UTC = 02:00 IST
+  workflow_dispatch: # "Run workflow" button in the Actions tab
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages deploy hook
+        run: curl -fsS -X POST "${{ secrets.CF_PAGES_DEPLOY_HOOK }}"

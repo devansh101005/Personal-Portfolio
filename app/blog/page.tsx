@@ -5,7 +5,7 @@ import { profile } from "@/content";
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Writing by Devansh on backend systems, ML, and shipping real software — published on Hashnode.",
+    "Writing by Devansh on backend systems, ML, and shipping real software, published on Hashnode.",
   alternates: { canonical: "/blog" },
   openGraph: {
     title: "Blog · Devansh",
@@ -32,7 +32,7 @@ export default function BlogPage() {
       <header className="mb-8">
         <Eyebrow icon="blog" label="Blog" />
         <h1 className="font-display text-[clamp(44px,8vw,84px)] font-black leading-[0.98] tracking-[-0.02em]">
-          Writing<span className="text-accent">.</span>
+          Writing<span className="text-accent-fill">.</span>
         </h1>
         <p className="mt-4 max-w-[60ch] text-[15.5px] text-muted">
           Notes on backend systems, ML, and what I learn shipping real software.
@@ -52,7 +52,7 @@ export default function BlogPage() {
           </a>
         ) : (
           <p className="rounded-lg border border-dashed border-line px-5 py-6 font-mono text-xs uppercase tracking-[0.08em] text-muted">
-            Publication link coming soon — see content/TODO.md
+            Publication link coming soon. See content/TODO.md
           </p>
         )}
       </div>

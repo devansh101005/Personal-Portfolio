@@ -1,6 +1,6 @@
 # Devansh — Portfolio
 
-Personal portfolio + personal-brand site for **Devansh** (B.Tech CSE '27, Shiv Nadar University). Editorial / print-magazine aesthetic, light-mode-first with a dark toggle, one terracotta accent. Built to (1) convince a recruiter this is production-grade engineering and (2) share cleanly on Twitter/X.
+Personal portfolio + personal-brand site for **Devansh** (B.Tech CSE '27, Shiv Nadar University). Editorial / print-magazine aesthetic, light-mode-first with a dark toggle, one terracotta accent. Built to (1) convince a recruiter this is production-grade engineering and (2) share cleanly as a link with a good preview card.
 
 **Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS 3 · deployed on Vercel. Every route is statically prerendered.
 
@@ -69,20 +69,15 @@ The list page, `/projects/[slug]` detail, sitemap, and the per-project OG image 
 
 All collected in [`content/TODO.md`](./content/TODO.md). Quick version:
 
-- **Socials** (`content/profile.ts`): Twitter/X and LinkedIn URLs (currently `"#"`; Hashnode is set). `"#"` links show "Coming soon" and are excluded from SEO `sameAs`.
-- **ImpactBridge** (`content/experience.ts`): role + bullets (currently `pending`, renders "Details coming soon").
-- **Repo links** (`content/projects.ts`): ConquerManage + Legal Wakeel GitHub URLs.
-- **Project images**: drop in `/public` and set the `image` field.
-- **Group B projects**: add Learning & Experiments entries (commented example in the file).
-- **Resume PDF** — see below.
+- **Before deploying:** set `NEXT_PUBLIC_SITE_URL` in the Vercel env to the real URL. Without it, canonical links, the sitemap and OG images point at `http://localhost:3000`.
+- **Incoming company:** not shown anywhere yet (by choice). Add it when you're ready to share.
+- Socials (GitHub, LinkedIn, Hashnode) are set. Twitter/X is intentionally not on the site.
 
 ---
 
-## Replace the resume PDF
+## Resume
 
-Drop your file at **`public/resume.pdf`**. The `/resume` page detects it at build and shows the Download button + an inline preview. No file = a tasteful "not added yet" note.
-
-A Google Drive link is supported as a fallback via `RESUME_DRIVE_URL` (use the direct-download format, shared "Anyone with the link"). Self-hosting from `/public` is strictly better for SEO and avoids sign-in friction.
+The resume is shared **on request**, not as a public PDF. Any "Resume" link opens a small dialog (`components/ResumeRequest.tsx`) with the email address, a Copy button, and a prefilled "Resume request" email. `/resume` shows the same card for direct visits.
 
 ---
 
@@ -90,8 +85,8 @@ A Google Drive link is supported as a fallback via `RESUME_DRIVE_URL` (use the d
 
 Everything absolute (canonical URLs, OG images, sitemap, `robots.txt`) flows through one env var.
 
-1. Point the domain at the Vercel project.
-2. Set `NEXT_PUBLIC_SITE_URL=https://yourdomain.com` in the Vercel env (and locally in `.env`).
+1. Add the domain in Cloudflare Pages → your project → Custom domains.
+2. Set `NEXT_PUBLIC_SITE_URL=https://yourdomain.com` in the Pages environment variables (and locally in `.env`), then redeploy.
 
 That's the only change.
 
@@ -102,14 +97,20 @@ Copy `.env.example` → `.env`:
 | Var | Purpose |
 |-----|---------|
 | `NEXT_PUBLIC_SITE_URL` | Canonical base URL (defaults to `http://localhost:3000`) |
-| `RESUME_DRIVE_URL` | Optional Drive fallback for the resume |
 | `NEXT_PUBLIC_HASHNODE_URL` | Optional override for the `/blog` Hashnode link |
 
 ---
 
-## Deploy (Vercel)
+## Deploy (Cloudflare Pages, static export)
 
-Push to GitHub, import the repo in Vercel — it auto-detects Next.js. Set `NEXT_PUBLIC_SITE_URL` to your `*.vercel.app` (or custom) URL. Done.
+The site is a static export (`output: "export"` in `next.config.mjs`): `npm run build` writes plain files to `/out`.
+
+1. Push the repo to GitHub.
+2. Cloudflare dashboard → Workers & Pages → Create → **Pages** → Connect to Git → pick the repo.
+3. Build settings: framework preset **Next.js (Static HTML Export)**, build command `npm run build`, output directory `out`.
+4. Environment variables: `NEXT_PUBLIC_SITE_URL=https://<project>.pages.dev` (or your custom domain). Node version comes from `.node-version` (20).
+5. Deploy. `public/_headers` sets PNG content-type for the share images and long caching for build assets.
+6. Nightly heatmap refresh: Pages → Settings → Builds → **Deploy hooks** → create one, then add it as the GitHub repo secret `CF_PAGES_DEPLOY_HOOK`. `.github/workflows/nightly-rebuild.yml` calls it at 02:00 IST.
 
 > Real search ranking also needs the domain to be linked-to and crawled over time — the code makes the site *eligible* to rank (metadata, OG, JSON-LD, sitemap, fast static HTML); it can't guarantee #1 on day one.
 

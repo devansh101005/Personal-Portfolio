@@ -18,18 +18,29 @@ export default function JourneySpine({ children }: { children: ReactNode }) {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let nodes: { el: HTMLElement; top: number }[] = [];
+    let jTop = 0, jH = 0, ticking = false;
     const build = () => {
+      jTop = journey.getBoundingClientRect().top + window.scrollY;
+      jH = journey.offsetHeight;
       nodes = Array.from(journey.querySelectorAll<HTMLElement>(".jnode")).map((el) => {
         const sec = el.closest(".jsec") as HTMLElement;
         return { el, top: sec.offsetTop + el.offsetTop + 10 };
       });
     };
-    const onScroll = () => {
-      const jH = journey.offsetHeight;
-      const read = window.scrollY + window.innerHeight * 0.45 - journey.offsetTop;
+    // Geometry is measured in build() (on resize), not on every scroll event;
+    // scroll work is batched to one update per frame.
+    const update = () => {
+      ticking = false;
+      const read = window.scrollY + window.innerHeight * 0.45 - jTop;
       const f = Math.max(0, Math.min(read, jH));
       fill.style.height = f + "px";
       nodes.forEach((n) => n.el.classList.toggle("on", f >= n.top));
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
     };
 
     build();

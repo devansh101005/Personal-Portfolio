@@ -5,6 +5,7 @@ import {
   Fragment,
   useEffect,
   useRef,
+  useState,
   type CSSProperties,
   type ElementType,
 } from "react";
@@ -26,6 +27,7 @@ export default function SplitWords({
   className?: string;
 }) {
   const ref = useRef<HTMLElement>(null);
+  const [shown, setShown] = useState(false); // state, so re-renders keep `.in`
 
   useEffect(() => {
     const el = ref.current;
@@ -33,8 +35,10 @@ export default function SplitWords({
     const io = new IntersectionObserver(
       (entries) =>
         entries.forEach((e) => {
-          if (e.isIntersecting) {
-            el.classList.add("in");
+          // Also reveal anything already scrolled past (fast scroll / anchor jump
+          // before hydration) — otherwise it would stay hidden above the fold.
+          if (e.isIntersecting || e.boundingClientRect.bottom < 0) {
+            setShown(true);
             io.unobserve(el);
           }
         }),
@@ -49,7 +53,7 @@ export default function SplitWords({
 
   return createElement(
     as,
-    { ref, className: `split-words ${className}`.trim() },
+    { ref, className: `split-words ${shown ? "in" : ""} ${className}`.trim() },
     words.map((w, i) => {
       const isAccent = accentWords.includes(w.toLowerCase().replace(/[.,]/g, ""));
       // The space must live BETWEEN word spans (a real text node) — a trailing

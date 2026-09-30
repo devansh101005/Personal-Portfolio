@@ -5,7 +5,7 @@ import { profile } from "@/content";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Get in touch with Devansh — email devanshpandeyji4321@gmail.com, or find him on GitHub, Twitter/X, LinkedIn and Hashnode.",
+    "Get in touch with Devansh by email at devanshpandeyji4321@gmail.com, or find him on GitHub, LinkedIn and Hashnode.",
   alternates: { canonical: "/contact" },
   openGraph: {
     title: "Contact · Devansh",
@@ -22,7 +22,6 @@ const channels: { label: string; value: string; href: string }[] = [
     value: profile.socials.github.replace(/^https?:\/\//, ""),
     href: profile.socials.github,
   },
-  { label: "Twitter / X", value: "", href: profile.socials.twitter },
   { label: "LinkedIn", value: "", href: profile.socials.linkedin },
   { label: "Hashnode", value: "", href: profile.socials.hashnode },
 ];
@@ -33,11 +32,11 @@ export default function ContactPage() {
       <header className="mb-10">
         <Eyebrow icon="contact" label="Contact" />
         <h1 className="font-display text-[clamp(44px,8vw,84px)] font-black leading-[0.98] tracking-[-0.02em]">
-          Let&apos;s talk<span className="text-accent">.</span>
+          Let&apos;s talk<span className="text-accent-fill">.</span>
         </h1>
         <p className="mt-4 max-w-[58ch] text-[15.5px] text-muted">
-          Recruiting, building something, or just want to compare notes — email
-          is the fastest way to reach me.
+          Whether you&apos;re hiring, building something, or just want to
+          compare notes, email is the fastest way to reach me.
         </p>
       </header>
 

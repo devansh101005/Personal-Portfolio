@@ -4,16 +4,13 @@ export const profile: Profile = {
   name: "Devansh",
   monogram: "Dv.",
   positioning:
-    "Full-stack engineer building production systems, with growing depth in ML research.",
+    "Engineer working across backend, ML and deep learning.",
   subline:
-    "Pre-final-year CSE student shipping real software — a live ed-tech LMS, distributed task infrastructure, and model-distillation research at IIT BHU.",
+    "Pre-final-year CSE student at Shiv Nadar University. I built a full platform for a coaching institute as a freelancer, interned at IIT BHU and ImpactBridge, and have two papers accepted at IEEE conferences this year.",
   email: "devanshpandeyji4321@gmail.com",
-  location: "Pratapgarh, Uttar Pradesh",
-  openTo: "August 2026 placements",
   socials: {
     github: "https://github.com/devansh101005",
-    twitter: "#", // TODO (§13): X/Twitter profile URL
-    linkedin: "#", // TODO (§13): LinkedIn URL
+    linkedin: "https://www.linkedin.com/in/devansh-pandey-a71667218",
     hashnode: "https://devansh1010.hashnode.dev/", // TODO (§13): Hashnode publication URL
   },
 };

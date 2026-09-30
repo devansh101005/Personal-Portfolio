@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement, useEffect, useRef, type ElementType, type ReactNode } from "react";
+import { createElement, useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
 
 type Variant = "up" | "left" | "right" | "zoom" | "wipe";
 
@@ -31,6 +31,9 @@ export default function Reveal({
   threshold?: number;
 }) {
   const ref = useRef<HTMLElement>(null);
+  // Kept in React state (not a raw classList.add) so a re-render can't strip
+  // `.in` and hide already-revealed content again.
+  const [shown, setShown] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -38,21 +41,25 @@ export default function Reveal({
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) {
-            el.classList.add("in");
+          // Also reveal anything already scrolled past (fast scroll / anchor jump
+          // before hydration) — otherwise it would stay hidden above the fold.
+          if (e.isIntersecting || e.boundingClientRect.bottom < 0) {
+            setShown(true);
             io.unobserve(el);
           }
         });
       },
-      { threshold }
+      // A wipe starts fully clipped (clip-path), so its intersectionRatio is
+      // always 0 and a non-zero threshold would never fire — use 0 for it.
+      { threshold: variant === "wipe" ? 0 : threshold }
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [threshold]);
+  }, [threshold, variant]);
 
   return createElement(
     as,
-    { ref, className: `${variantClass[variant]} ${className}`.trim() },
+    { ref, className: `${variantClass[variant]} ${shown ? "in" : ""} ${className}`.trim() },
     children
   );
 }

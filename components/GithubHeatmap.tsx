@@ -28,7 +28,8 @@ export default async function GithubHeatmap({ username }: { username: string }) 
   try {
     const res = await fetch(
       `https://github-contributions-api.jogruber.de/v4/${username}?y=last`,
-      { next: { revalidate: 86400 } }
+      // 4s cap: a slow third-party API must never stall page rendering.
+      { next: { revalidate: 86400 }, signal: AbortSignal.timeout(4000) }
     );
     if (!res.ok) return null;
     const data = (await res.json()) as {
@@ -63,9 +64,9 @@ export default async function GithubHeatmap({ username }: { username: string }) 
           <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-accent">
             Contributions
           </div>
-          <h3 className="font-display text-[clamp(22px,3vw,28px)] font-black tracking-[-0.01em]">
+          <h2 className="font-display text-[clamp(22px,3vw,28px)] font-black tracking-[-0.01em]">
             Still shipping.
-          </h3>
+          </h2>
         </div>
         <span className="font-mono text-xs text-muted">
           {total.toLocaleString()} in the last year

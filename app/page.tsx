@@ -11,7 +11,8 @@ import ProjectCard from "@/components/ProjectCard";
 import StackList from "@/components/StackList";
 import GithubHeatmap from "@/components/GithubHeatmap";
 import ContactSection from "@/components/ContactSection";
-import { profile, experience, productionProjects, stack } from "@/content";
+import PublicationEntry from "@/components/PublicationEntry";
+import { profile, experience, productionProjects, stack, publications } from "@/content";
 
 export default function Home() {
   return (
@@ -20,10 +21,10 @@ export default function Home() {
       <header className="mx-auto grid max-w-prose grid-cols-1 items-center gap-10 px-8 py-[72px] md:grid-cols-[1fr_400px]">
         <div>
           <h1 className="font-display text-[clamp(58px,9.4vw,120px)] font-black leading-[0.95] tracking-[-0.02em]">
-            Devansh<span className="text-accent">.</span>
+            Devansh<span className="text-accent-fill">.</span>
           </h1>
           <p className="mt-6 max-w-[32ch] font-display text-[clamp(21px,2.7vw,29px)] font-semibold leading-[1.38] tracking-[-0.01em]">
-            <SplitWords text={profile.positioning} accent="growing depth" />
+            <SplitWords text={profile.positioning} accent="ML and deep learning" />
           </p>
           <p className="mt-4 max-w-[56ch] text-[15.5px] text-muted">{profile.subline}</p>
           <div className="mt-9 flex flex-wrap items-center gap-3.5">
@@ -37,12 +38,6 @@ export default function Home() {
                 className="font-mono text-xs text-muted transition-colors hover:text-accent"
               >
                 GitHub
-              </a>
-              <a
-                href={profile.socials.twitter}
-                className="font-mono text-xs text-muted transition-colors hover:text-accent"
-              >
-                Twitter
               </a>
               <a
                 href={profile.socials.linkedin}
@@ -62,21 +57,24 @@ export default function Home() {
         <section className="jsec">
           <span className="jnode" />
           <Eyebrow icon="about" label="About" />
-          <Reveal variant="left" className="max-w-[62ch]">
+          {/* Not wrapped in <Reveal>: on phones this paragraph is the LCP
+              element, and a JS-gated fade held it invisible for ~1.9s. */}
+          <div className="max-w-[62ch]">
             <p className="font-display text-[22px] font-semibold leading-[1.45] tracking-[-0.01em] first-letter:float-left first-letter:mr-3 first-letter:mt-1.5 first-letter:font-black first-letter:text-[3.1em] first-letter:leading-[0.8] first-letter:text-accent">
-              A backend-leaning full-stack engineer who ships things people
-              actually use, now closing an ML-depth gap on purpose.
+              I build across backend and ML, from payment flows and APIs to
+              deep learning models small enough to run on a phone.
             </p>
             <p className="mt-4 max-w-[54ch] text-[17px] text-muted">
-              Most of my work is production integration — payments, auth, exam
-              engines, queues. The IIT BHU research internship is deliberate: a
-              focused push into model compression and applied ML, not a pivot
-              away from building.
+              On the backend side that means payments, logins, exam engines and
+              job queues. On the ML side it&apos;s deep learning research at IIT
+              BHU and two papers accepted at IEEE conferences this year. Lately
+              I&apos;ve been getting into distributed systems, building queues,
+              locks and rate limiters on Redis to understand how things scale.
             </p>
             <Link href="/about" className="viewall mt-4 inline-block">
               Read full about →
             </Link>
-          </Reveal>
+          </div>
         </section>
 
         {/* Experience */}
@@ -115,7 +113,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Activity — the spine ends on the "still shipping" evidence */}
+        {/* Publications: two accepted papers, compact; full entries on /research */}
+        <section className="jsec">
+          <span className="jnode" />
+          <SectionHeading
+            icon="research"
+            eyebrow="Research"
+            title="Accepted papers"
+            viewAllHref="/research"
+            viewAllLabel="Details →"
+          />
+          <Reveal className="border-b border-line">
+            {publications.map((p) => (
+              <PublicationEntry key={p.slug} p={p} compact />
+            ))}
+          </Reveal>
+        </section>
+
+        {/* Activity: the spine ends on the "still shipping" evidence */}
         <section className="jsec">
           <span className="jnode" />
           <GithubHeatmap username="devansh101005" />

@@ -1,8 +1,11 @@
 import type { Project } from "./types";
 
-// FILL ME: each project below has structure but empty content.
-// Fill oneLiner, stack, liveUrl, githubUrl, image, and the detail fields per project.
-// Prompt format I'll use: "Fill <slug>: oneLiner=… / stack=[…] / live=… / repo=… / overview=… etc."
+// Every fact below was checked against the project's own repo (code, README,
+// eval files, git history) or, for LightDep, the research notes. No invented
+// numbers — if something couldn't be verified it was left out.
+//
+// To add/edit a project: fill oneLiner, stack, liveUrl/githubUrl, image
+// (put files in /public/projects/<slug>/), and the detail fields.
 //
 // Organized by tier (§5), not by domain — domain shows as `domainTag` on the card.
 // ⚠️ Never add FrameForge or any "LinkedIn automation" project (abandoned). FitX is resume-only (excluded).
@@ -15,33 +18,139 @@ export const projects: Project[] = [
     group: "production",
     domainTag: "Full-stack",
     oneLiner:
-      "Full-stack coaching-institute management platform for JEE/NEET prep — admins, students, parents, teachers, fees, exams.",
-    status: "in-progress",
+      "The full platform for a JEE/NEET coaching institute: enrollment, fee payments, exams, and dashboards for five roles. I built it solo as a freelance project.",
     liveUrl: "https://beeducated.co.in",
-    period: "2025",
+    githubUrl: "https://github.com/devansh101005/beeducatedweb",
+    period: "Jun 2025 – Present",
+    image: {
+      src: "/projects/be-educated/cover.webp",
+      alt: "Be Educated homepage: IIT-JEE & NEET Foundation Institute",
+      caption: "The public site at beeducated.co.in.",
+    },
     stack: [
       "React 19",
       "TypeScript",
       "Express",
-      "Supabase (PostgreSQL)",
+      "Supabase (Postgres)",
       "Clerk",
       "Cashfree",
-      "TailwindCSS",
+      "Tailwind CSS",
       "Resend",
     ],
+    highlights: [
+      "Built solo, from the database schema to the admin dashboards.",
+      "Payments can't get lost: the Cashfree webhook activates the enrollment even if the student never makes it back to the site.",
+      "Access control lives in the database (Supabase row-level security), not just in the UI.",
+      "Came back later to harden it: webhook signature checks, server-side exam timing, idempotent payment verification, rate limits on payments, plus unit tests and CI.",
+    ],
     overview:
-      "BeEducated is a multi-role SaaS platform for an Indian coaching institute targeting JEE/NEET students. It covers the full operational surface: student enrollment, batch management, course content delivery, an exam engine, fee collection, and automated reminders. Roles include admin, student, parent, teacher, and batch_manager, each with scoped access enforced at the database layer via Supabase RLS.",
+      "Be Educated is a coaching institute for JEE/NEET and foundation classes. I built their whole system: the public site, student enrollment, batches, course content, fee collection with installments and coupons, an online exam engine, announcements, and automatic fee reminders.\n\nThere are five kinds of users (admin, student, parent, teacher, batch manager) and each one gets its own dashboard and only sees their own data.",
     problem:
-      "Coaching institutes managing hundreds of JEE/NEET students across multiple batches needed a single system for enrollment, fee tracking, exam delivery, and parent communication — replacing scattered spreadsheets and manual processes.",
+      "The institute was managing fees, batches, tests and parent updates with spreadsheets and manual work, and none of it was connected.",
     approach:
-      "Express + TypeScript backend with a module-per-domain structure (fees, exams, content, announcements, etc.) backed by Supabase with RLS policies as the authorization layer. Clerk handles auth; its webhooks sync user lifecycle events to Supabase. Cashfree is the active payment gateway with a webhook handler that routes enrollment-type orders through an authoritative state-transition path to guarantee activation even if the browser never hits the return_url.",
+      "Express + TypeScript backend, split into one module per area (fees, exams, content, and so on), on Supabase Postgres. Clerk handles login, and a webhook keeps Clerk users in sync with the database. Instead of trusting the frontend I put row-level security policies in Postgres, so even a buggy route can't leak another student's data. Payments go through Cashfree, and enrollment only activates from the verified webhook.",
     architecture: [
-      "Clerk webhooks (svix HMAC) sync user.created/updated/deleted to Supabase; `attachUser` middleware auto-creates users as a fallback if the webhook fires late — preserving role on upsert conflicts",
-      "Cashfree PAYMENT_SUCCESS_WEBHOOK routes enrollment orders through `enrollmentService.verifyPayment()` for authoritative state transition; falls through to a generic fee handler if the order_id isn't an enrollment record",
-      "Supabase RLS policies on every table enforce row-scoped access by role — students see only their own rows, teachers see their courses, service_role bypasses for server-side writes",
-      "Exam engine: a SQL `grade_mcq_response` function auto-grades single_choice, multiple_choice, true_false, and numerical (with tolerance) questions; `calculate_attempt_results` upserts ranked results on conflict",
-      "`node-cron` job at 21:00 IST sends fee reminders on a typed escalation ladder (due_in_7 → due_in_3 → due_tomorrow → overdue_week_1…overdue_week_4_plus), de-duplicated to prevent re-sends",
-      "`setInterval` every 2 minutes auto-submits expired exam attempts server-side, independent of client disconnects",
+      "Clerk webhooks (svix-signed) create, update and delete users in Supabase. An `attachUser` middleware also creates the row if the webhook is late, so the first login never breaks.",
+      "Cashfree `PAYMENT_SUCCESS_WEBHOOK` goes through `enrollmentService.verifyPayment()`, so the enrollment gets activated even if the browser never returns to `return_url`.",
+      "Exam grading happens in SQL (`grade_mcq_response`): single/multiple choice, true/false, and numerical answers with a tolerance. Ranked results are upserted.",
+      "A timer on the server auto-submits expired attempts every 2 minutes, so closing the tab doesn't stop the clock.",
+      "`node-cron` runs fee reminders daily at 21:00 IST. They escalate from due-in-7-days to overdue, and a `reminder_log` table makes sure nobody gets the same reminder twice.",
+      "Content files are served through signed URLs, and the admin API is split into sub-routers per area (fees, students, parents, teachers…).",
+    ],
+    gallery: [
+      {
+        src: "/projects/be-educated/gallery-courses.webp",
+        alt: "Be Educated programs page with an active offline batch and a coming-soon online batch",
+        caption: "The programs page. Live programs go straight to enrolment, and ones that aren't open yet show as coming soon.",
+      },
+      {
+        src: "/projects/be-educated/gallery-fee-table.webp",
+        alt: "Fee overview table listing monthly, annual and discounted prices for classes 6 to 12",
+        caption: "The fee overview for every class. Clicking a row loads it into the fee calculator above it.",
+      },
+      {
+        src: "/projects/be-educated/gallery-fee-plans.webp",
+        alt: "Three payment plans: monthly, two installments, and one-time payment",
+        caption: "Students pick one of three payment plans: monthly, two installments, or one-time.",
+      },
+      {
+        src: "/projects/be-educated/gallery-signup.webp",
+        alt: "Be Educated sign-up page secured by Clerk",
+        caption: "Sign-up runs on Clerk. After signing up, an admin assigns the role (student, parent, teacher…) and that decides which dashboard you get.",
+      },
+      {
+        src: "/projects/be-educated/gallery-faq.webp",
+        alt: "FAQ page with a search box and topic filters",
+        caption: "The FAQ page, with a search box and questions grouped by topic.",
+      },
+      {
+        src: "/projects/be-educated/gallery-contact.webp",
+        alt: "Contact page with an enquiry form next to a map",
+        caption: "The contact page: an enquiry form next to the institute's location.",
+      },
+    ],
+  },
+  {
+    slug: "iitbhu-distillation",
+    name: "LightDep",
+    group: "production",
+    domainTag: "ML Research",
+    oneLiner:
+      "My research at IIT BHU: a 3.96 MB model that screens for depression from face and voice features right on the device. The paper got accepted at IEEE ANTS 2026.",
+    githubUrl: "https://github.com/devansh101005/Depression_Detection_KD_Edge",
+    period: "2026",
+    image: {
+      src: "/projects/iitbhu-distillation/cover.webp",
+      alt: "LightDep architecture: visual and audio transformer streams fused late for classification",
+      caption: "LightDep's architecture: two small transformers (face landmarks, voice features) fused late.",
+      kind: "figure",
+    },
+    stack: [
+      "PyTorch",
+      "ONNX Runtime (+ Web)",
+      "MediaPipe",
+      "OpenFace",
+      "Docker",
+      "SciPy",
+      "scikit-learn",
+    ],
+    highlights: [
+      "Paper accepted at IEEE ANTS 2026 (IIT Roorkee). I'm joint first author.",
+      "The deployed model is a 3.96 MB INT8 ONNX file, 28× smaller than the teacher it learned from. It runs in 96 ms on one CPU thread, and quantization cost no accuracy.",
+      "75.9 binary F1 on D-Vlog, within 1.8 points of the best server-side models. The tiny 0.16M version still gets 75.4.",
+      "Distillation lifted depression recall by +10.4 points (p = 0.045). A 10-seed rerun on a second GPU confirmed it on all four metrics (p ≤ 0.003 after Holm correction).",
+      "The same file runs in a browser tab (217 ms), on an iPhone (223 ms) and on a mid-range Android phone (664 ms). Inference needs no server.",
+    ],
+    overview:
+      "Most depression-detection models from papers are huge and need server-side tools like OpenFace to even produce their inputs, so they can't run on a phone. At IIT BHU I worked on shrinking that down: LightDep is a small two-stream transformer that learns from bigger teacher models (knowledge distillation) and then gets quantized for on-device use.\n\nIt comes in four sizes, from 0.16M to 6.36M parameters. It's a screening-risk indicator for research, not a diagnostic tool.",
+    problem:
+      "Two open questions. First, does distilling a big model into a tiny one actually help, or is it just a nice idea? Second, even with a tiny model, can a phone produce the same input features the model was trained on?",
+    approach:
+      "I trained the student from scratch and with distillation on two datasets (LMVD and D-Vlog), using the same seeds for both and paired significance tests, so a lucky seed couldn't fake a result. Then I exported the best model to ONNX, quantized it to INT8, and built a bridge that turns MediaPipe face landmarks (which run on phones) into the OpenFace format the model expects, to measure how much the predictions drift.",
+    architecture: [
+      "Two streams, visual (136-d landmarks) and audio (25-d acoustic features), each with its own small pre-norm transformer, then a fusion transformer and masked mean pooling.",
+      "No positional encodings on purpose, so the model doesn't care about frame rate or clip length. Those are exactly what change between a research video and a phone recording.",
+      "The distillation loss is cross-entropy plus a temperature-scaled KL term. Soft targets from the 5-model teacher ensemble are precomputed once.",
+      "INT8 through ONNX dynamic quantization. PyTorch's eager INT8 breaks `nn.TransformerEncoder`'s fast path, so ONNX was the only clean route. torch↔ONNX outputs match to 3e-7.",
+      "Modality-dropout training (randomly zeroing one stream) so the model still works when audio is missing. Visual-only F1 went from 0.0 to 69.7.",
+      "OpenFace ran in an amd64 Docker image I built myself, because the public arm64 one wouldn't work on x86.",
+      "Compared against logistic regression, an MLP, a GRU and a 1-D CNN under the same training. LightDep-M had the best accuracy and F1. The MLP came close on F1 (the gap isn't significant), but LightDep kept an accuracy edge when 30–50% of frames were dropped.",
+    ],
+    outcomes:
+      "The main finding is that distillation only helps when the teacher is a stronger and well-calibrated screener. On D-Vlog it was, and distillation raised recall by +10.4 and F1 by +4.3. It also made training more stable across seeds, and on the best checkpoint it halved calibration error (ECE 0.076 → 0.038). On LMVD the teachers were poorly calibrated, and none of the 13 distillation variants I tried improved accuracy or F1 significantly. Distilling from one of them actually made recall worse.\n\nTwo things I caught along the way. While reproducing the MMFformer teacher I found its weight_decay default was 1e-3 instead of the paper's 0.1. And an early \"the model collapses without video\" result turned out to be a NaN bug from fully masking a modality, not real model behaviour.\n\nWhat's still open: the visual bridge works (prediction drift 0.041 on a 2-clip proof of concept), but there's no on-device replacement for the audio features yet, and audio is the stream the model relies on most.",
+    gallery: [
+      {
+        src: "/projects/iitbhu-distillation/pareto.webp",
+        alt: "Binary F1 versus parameter count for LightDep sizes with and without distillation",
+        caption: "F1 vs model size. Distillation (solid line) lifts every size and flattens the curve. The 0.16M model gets 75.4 F1, close to the 3.67M one's 75.9 with 23× fewer parameters.",
+        kind: "figure",
+      },
+      {
+        src: "/projects/iitbhu-distillation/mechanism.webp",
+        alt: "Bar charts of mean predicted depression probability and calibration error for scratch, KD and teacher",
+        caption: "Why recall goes up: the student picks up the teacher's more sensitive operating point, and its calibration error halves (best checkpoints).",
+        kind: "figure",
+      },
     ],
   },
   {
@@ -50,27 +159,45 @@ export const projects: Project[] = [
     group: "production",
     domainTag: "Distributed Systems",
     oneLiner:
-      "Two-service background job system: an HTTP producer enqueues tasks to Redis; a worker consumes, retries, and dead-letters them.",
+      "A small job queue. An Express producer pushes tasks into Redis, and a pool of workers picks them up, retries failures, and dead-letters the ones that keep failing.",
     status: "built",
     githubUrl: "https://github.com/devansh101005/ConquerManage",
     period: "Mar 2026",
-    stack: ["TypeScript", "Node.js", "Express.js", "Redis", "ioredis", "Docker"],
+    image: {
+      src: "/projects/conquermanage/cover-terminal.webp",
+      alt: "Terminal: health checks and enqueue requests against the producer",
+      caption: "Enqueueing tasks against the running stack.",
+    },
+    stack: ["TypeScript", "Node.js", "Express", "Redis", "ioredis", "Docker Compose"],
     overview:
-      "A self-built learning project implementing the producer/worker pattern for background task processing. A POST /enqueue endpoint pushes serialized tasks onto a Redis list; a configurable pool of worker loops pulls and executes them. Built as a TypeScript port of an earlier Go version to learn Redis list operations and async concurrency in Node.js.",
+      "I first wrote this in Go, then rewrote it in TypeScript to understand how the same producer/worker pattern works on Node's event loop. The producer takes `POST /enqueue`, validates the task and puts it in a Redis list. The worker service runs several loops that pull tasks and process them.\n\nThe task handlers (send_email, resize_image, generate_pdf) just log what they would do. The point was the queue, not the jobs.",
     problem:
-      "Blocking HTTP handlers on slow operations (email delivery, image resizing) increases request latency; the work needs to be deferred to a background process without dropping tasks on failure.",
+      "Slow work like sending emails shouldn't block an HTTP request. It should go to the background, and if it fails it shouldn't just vanish.",
     approach:
-      "The producer serializes tasks with a UUID and RPUSHes them to a Redis list. Workers BLPOP to block-wait with zero polling, process the task, and on failure re-enqueue with a decremented retry counter; tasks that exhaust their retries are RPUSHed to a dead-letter queue instead of being silently dropped.",
+      "Tasks get a UUID and are `RPUSH`ed onto a list. Workers `BLPOP` them, so there's no busy polling. A failed task goes back on the queue with one fewer retry, and once it's out of retries it goes to a dead-letter list where I can inspect it later.",
     architecture: [
-      "Worker uses `redis.blpop('task_queue', 0)` — blocking indefinitely, no polling loop",
-      "Configurable concurrency via a `WORKER_CONCURRENCY` env var: N async loops launched with `Promise.all`",
-      "Retry logic decrements `task.retries` and re-enqueues; zero-retry tasks go to `task_queue:dead` via RPUSH",
-      "SIGINT sets an `isShuttingDown` flag, awaits all in-flight worker promises, then calls `redis.quit()` before exit",
-      "Per-field validation on POST /enqueue with task-type-specific checks (send_email requires `to` + `subject` in the payload)",
-      "Docker Compose wires three services: redis:7-alpine, producer (port 3000), worker (port 3001) with a shared REDIS_URL",
+      "Each worker loop gets its own Redis connection. A blocking `BLPOP` holds its connection while it waits, so loops sharing one client would just take turns.",
+      "`BLPOP` blocks for at most 5s, then loops. There's no polling burning CPU, and a worker notices a shutdown within 5 seconds.",
+      "Concurrency comes from `WORKER_CONCURRENCY` (default 3): N async loops started together.",
+      "Failed tasks go back on the queue with `retries - 1`. At zero they're pushed to `task_queue:dead`.",
+      "On SIGINT or SIGTERM it stops taking new work, lets in-flight tasks finish, then closes Redis, with an 8s cap so it finishes before Docker's 10s kill.",
+      "Validation per task type, e.g. `send_email` needs `to` and `subject`.",
+      "Docker Compose runs redis, the producer (:3000) and the worker (:3001, with `/health` and `/metrics`).",
     ],
     outcomes:
-      "Hands-on exposure to Redis BLPOP semantics, dead-letter queue patterns, and graceful shutdown coordination in Node.js. No production deployment.",
+      "It runs end to end with Docker Compose (the gallery has a full run). The thing I didn't expect: `BLPOP` holds its connection while it waits, so real parallelism needs one Redis connection per worker loop.",
+    gallery: [
+      {
+        src: "/projects/conquermanage/demo.webp",
+        alt: "Terminal session: compose up, health checks, enqueue, validation error, metrics, compose down",
+        caption: "A full run: compose up, health checks, a few tasks, one rejected by validation, then the worker's metrics.",
+      },
+      {
+        src: "/projects/conquermanage/docker-build.webp",
+        alt: "Terminal: docker compose up --build output",
+        caption: "Building the producer and worker images.",
+      },
+    ],
   },
   {
     slug: "lockforge",
@@ -78,26 +205,28 @@ export const projects: Project[] = [
     group: "production",
     domainTag: "Distributed Systems",
     oneLiner:
-      "HTTP API for distributed mutual exclusion — prevents concurrent processes from operating on the same shared resource.",
+      "A distributed lock service over HTTP. When several servers try to touch the same resource, exactly one gets the lock.",
     status: "built",
+    githubUrl: "https://github.com/devansh101005/LockForge",
     period: "Mar 2026",
-    stack: ["TypeScript", "Node.js", "Express 5", "Redis", "ioredis", "Docker"],
+    diagram: "lockforge",
+    stack: ["TypeScript", "Node.js", "Express 5", "Redis", "ioredis", "Lua", "Docker"],
     overview:
-      "A REST API that lets multiple servers acquire, release, and extend named locks on shared resources. Built to learn distributed systems primitives — atomic operations, Lua scripting in Redis, and deadlock prevention. Not production middleware; a focused learning project with a complete implementation.",
+      "A small REST API for acquiring, releasing, extending, checking and listing named locks, backed by Redis. I built it to properly understand atomic operations. It's the kind of thing you need when two servers might process the same order at the same time.",
     problem:
-      "Multiple processes hitting the same resource concurrently (e.g., two payment servers processing the same order) need cross-process mutual exclusion that works across a network and survives process crashes without leaving permanent deadlocks.",
+      "A lock across machines has to be atomic (two servers can't both win), owner-safe (you can't release someone else's lock), and it can't stay stuck forever if the holder crashes.",
     approach:
-      "Redis `SET NX PX` atomically acquires locks in one command — Redis's single-threaded execution guarantees only one caller wins. Lua scripts run inside Redis for release and extend operations, making the check-then-act sequence uninterruptible and eliminating TOCTOU race conditions. TTL auto-expiry handles the crash/deadlock case.",
+      "Acquiring is a single `SET key owner NX PX ttl`, and since Redis runs commands one at a time only one caller can win. Release and extend have to check the owner and then act, so I wrote them as Lua scripts that run inside Redis and can't be interrupted halfway. The TTL handles crashed holders.",
     architecture: [
-      "`redis.set(key, owner, 'NX', 'PX', ttl)` in `acquireLock()` — single command; a null return means the lock is held",
-      "Lua GET+DEL script in `releaseLock()` — atomic owner check prevents deleting another process's lock",
-      "Lua GET+PEXPIRE script in `extendLock()` — owner-only TTL extension, same atomicity guarantee",
-      "`SCAN cursor MATCH lock:* COUNT 100` loop in `listLocks()` — avoids the blocking `KEYS` command",
-      "403 vs 404 distinction on release: a post-Lua GET distinguishes 'not your lock' from 'not locked'",
-      "Docker Compose wires the `lockforge` service to `redis:7-alpine` via internal DNS, Redis DB `/3`",
+      "`acquireLock()` is one `SET … NX PX` call. `null` means the lock is taken, and the API answers 409 with the current owner and `retry_after_ms`.",
+      "`releaseLock()` runs a Lua script: `GET == owner` then `DEL`. That closes the gap where another process grabs the lock between my check and my delete.",
+      "`extendLock()` does the same thing with `PEXPIRE`: only the owner can extend.",
+      "`listLocks()` walks keys with `SCAN … MATCH lock:* COUNT 100` instead of `KEYS`, which would block Redis.",
+      "Release returns 403 for \"not your lock\" and 404 for \"not locked\". A GET after the script tells the two apart.",
+      "The default TTL is 30s, and it runs next to `redis:7-alpine` in Docker Compose.",
     ],
     outcomes:
-      "Implemented all five lock operations (acquire, release, check, extend, list) with correct atomicity guarantees. A concurrent-test shell script (`scripts/test-concurrent.sh`) fires 5 simultaneous acquire requests; only one returns 200.",
+      "All five operations (acquire, release, check, extend, list) work. `scripts/test-concurrent.sh` fires 5 acquire requests at the same moment to check that only one gets a 200.",
   },
   {
     slug: "limitron",
@@ -105,26 +234,28 @@ export const projects: Project[] = [
     group: "production",
     domainTag: "Backend / Systems",
     oneLiner:
-      "Express middleware API gateway that rate-limits requests per API key or IP using Redis sorted sets.",
+      "A rate limiter written as Express middleware. It uses a sliding-window log in Redis and sets per-API-key limits by tier.",
     status: "built",
+    githubUrl: "https://github.com/devansh101005/Limitron",
     period: "Mar 2026",
+    diagram: "limitron",
     stack: ["TypeScript", "Node.js", "Express", "Redis", "ioredis", "Docker"],
     overview:
-      "Limitron is a rate-limiting API gateway built as a learning project. It sits in front of Express routes and throttles requests by API key or IP address. Built to understand sliding-window algorithms, Redis sorted sets, and Express middleware patterns.",
+      "Limitron sits in front of `/api/*` routes and throttles each API key (or IP when there's no key). Nginx and cloud gateways do this for you, but I wanted to build the algorithm myself and see how it actually works.",
     problem:
-      "APIs without rate limiting are vulnerable to abuse — a single client can flood requests, crash the server, or exhaust costs. Standard solutions (Nginx, API Gateway) hide the internals; building one from scratch exposes the actual mechanics.",
+      "Without a limit, one client can flood an API. Fixed windows (say, reset every minute) let clients burst at the edges, so I went with a sliding window instead.",
     approach:
-      "A sliding-window log algorithm implemented with Redis sorted sets: timestamps are stored as scores (`ZADD`), stale entries pruned with `ZREMRANGEBYSCORE`, and the count checked with `ZCARD` — all O(log N). API keys map to named tiers stored as Redis hashes, allowing per-key limits without hardcoding.",
+      "Every request is a timestamp in a Redis sorted set per client. On each request I remove timestamps older than the window (`ZREMRANGEBYSCORE`), count what's left (`ZCARD`), and either add the new one (`ZADD`) or reject with 429. Limits come from tiers stored in Redis hashes, so changing a key's plan doesn't need a deploy.",
     architecture: [
-      "Sliding-window log: `ZREMRANGEBYSCORE` evicts old entries, `ZCARD` counts, `ZADD` stores `randomUUID` as member with `Date.now()` as score",
-      "Tier-based config: an `apikey:<key>` hash stores the tier name, a `tier:<name>` hash stores `max_requests` + `window_seconds` — middleware loads both per request",
-      "Standard rate-limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, `Retry-After`) set on every limited response",
-      "Middleware applied only to `/api/*` via `app.use('/api', limiter, router)` — admin routes are unthrottled",
-      "`GET /api/status` reads the current window state (`ZCARD`) without consuming a request slot",
-      "Docker Compose wires limitron + `redis:7-alpine`, on Redis DB `/2` to avoid collisions with other local projects",
+      "Sorted-set members are `randomUUID()`s with `Date.now()` as the score, so two requests in the same millisecond don't collide.",
+      "`apikey:<key>` maps to a tier name, and `tier:<name>` holds `max_requests` and `window_seconds`.",
+      "Every response gets `X-RateLimit-Limit/Remaining/Reset`. On a 429 it adds `Retry-After`, calculated from the oldest entry in the window.",
+      "Mounted as `app.use('/api', limiter, router)`, so admin routes aren't throttled.",
+      "`GET /api/status` shows how much of your window you've used without using up a request.",
+      "Honest gap: prune, count and add are separate Redis calls, so two requests at the exact same moment can both get through. Wrapping them in `MULTI` or a Lua script (like I did in LockForge) would fix it.",
     ],
     outcomes:
-      "Implemented a working sliding-window rate limiter from scratch; learned Redis sorted-set semantics and how industry-standard rate-limit headers (used by GitHub, Stripe) are structured. No production deployment.",
+      "It runs with Docker Compose next to `redis:7-alpine`, and the headers use the same `X-RateLimit-*` style as GitHub's API.",
   },
   {
     slug: "legal-rag",
@@ -132,66 +263,120 @@ export const projects: Project[] = [
     group: "production",
     domainTag: "GenAI",
     oneLiner:
-      "RAG backend for Indian legal documents — hybrid pgvector + tsvector retrieval, cross-encoder reranking, and Groq LLM answers with citations.",
+      "Ask questions about Indian legal documents and get answers with citations. Retrieval is hybrid (vector + keyword) with reranking, built from scratch without LangChain.",
     status: "in-progress",
+    githubUrl: "https://github.com/devansh101005/VidhiVault",
     period: "Apr 2026",
+    diagram: "vidhivault",
     stack: [
       "FastAPI",
       "PostgreSQL + pgvector",
-      "Sentence Transformers",
+      "sentence-transformers",
+      "Cross-encoder reranker",
       "Celery + Redis",
-      "Groq (Llama 3.1 70B)",
       "PyMuPDF",
-      "Alembic",
       "pdfplumber",
+      "Alembic",
+    ],
+    highlights: [
+      "On my 24-query retrieval test, hybrid search raised recall@5 from 0.50 (vector only) to 0.64, and the reranker took it to 0.69.",
+      "Graded 30 real questions by hand instead of trusting a vibe check.",
+      "Everything runs on one Postgres: vectors (pgvector + HNSW) and full-text search in the same database.",
     ],
     overview:
-      "A domain-specific RAG system for Indian legal PDFs — judgments and statutes sourced from Indian Kanoon. A Celery worker handles async ingestion (parse → section-aware chunk → embed → store); at query time, hybrid retrieval + cross-encoder reranking feeds the top-5 chunks to Groq's Llama 3.1 70B, which generates a cited answer. Built from scratch without LangChain/LlamaIndex as an engineering demonstration of each pipeline stage.",
+      "A RAG backend for Indian legal PDFs (judgments and acts). You upload a PDF and a Celery worker parses it, splits it by legal sections, embeds the chunks and stores them. Then you can ask questions and get an answer that cites the chunks it used.\n\nI didn't use LangChain or LlamaIndex, because I wanted to see and measure every stage myself.",
     problem:
-      "Indian legal queries span both semantic meaning ('bail provisions under UAPA') and exact statutory references ('Section 439 CrPC') — pure vector or pure keyword retrieval fails one half. Naive RAG frameworks obscure the retrieval mechanics and make it impossible to measure or improve precision.",
+      "Legal questions come in two flavours: meaning-based (\"when does taking property become theft?\") and exact references (\"Section 439 CrPC\"). Vector search is bad at the second kind and keyword search is bad at the first.",
     approach:
-      "Two-stage retrieval: pgvector cosine search (HNSW index) and PostgreSQL tsvector full-text search run in parallel; results are fused via Reciprocal Rank Fusion (rank-based, avoiding score normalization across different scales); a cross-encoder then reranks the top-20 candidates before the LLM call. Each stage is independently measurable.",
+      "Run both: pgvector cosine search and Postgres full-text search (`ts_rank_cd`), 20 candidates each, merged with Reciprocal Rank Fusion. Merging by rank means I don't have to make the two kinds of score comparable. A cross-encoder then reranks the merged list, and the top 5 chunks go to the LLM, which has to cite them as [Source N].",
     architecture: [
-      "Hybrid retrieval fused with RRF (k=60): a pgvector HNSW cosine index + a generated PostgreSQL `tsvector` column with a GIN index — one DB, no extra infrastructure",
-      "Cross-encoder reranking with `cross-encoder/ms-marco-MiniLM-L-6-v2` on the top-20 candidates before passing top-5 to the LLM",
-      "Generator calls Groq's OpenAI-compatible endpoint over async `httpx`, parsing the Retry-After header and retrying up to 3 times on HTTP 429",
-      "Celery + Redis async ingestion queue: document status tracked pending → processing → completed/failed, with the error stored on failure",
-      "Section-aware chunker targets 512-token chunks with 50-token overlap, splitting on legal header patterns (Section X, Article Y, ORDER Z) before falling back to paragraph then sentence boundaries",
-      "A SHA-256 file hash on upload (`file_hash UNIQUE`) prevents duplicate document ingestion",
+      "Reciprocal Rank Fusion with k = 60 over a pgvector HNSW cosine index and a `tsvector` column.",
+      "Embeddings come from `all-MiniLM-L6-v2`. I resized chunks to 160 words with 25 overlap after finding the old 512-token chunks were being cut off at the model's 256-wordpiece limit (68% of them were).",
+      "The chunker splits on legal headings (Section, Article, Order) first, then paragraphs, then sentences.",
+      "`cross-encoder/ms-marco-MiniLM-L-6-v2` reranks the fused list down to 5.",
+      "The LLM is called over an OpenAI-compatible API with async `httpx`. On a 429 it reads `Retry-After` and retries.",
+      "Uploads are deduped by SHA-256 file hash, and document status moves pending → processing → completed/failed with the error saved.",
     ],
     outcomes:
-      "A 30-query manual evaluation against IPC and UAPA judgment documents: 13 good, 9 partial, 4 wrong, 2 abstain-wrong (missed an answer in the corpus), 6 abstain-correct (out-of-domain, correctly refused). The core pipeline is operational; the evaluator module and test suite remain stubs as of the last commit.",
+      "Retrieval, 24 test queries, recall@5: vector only 0.50, keyword only 0.49, hybrid 0.64, hybrid + rerank 0.69. The reranker isn't free though. It's about 0.8s per query while every other stage is under 20ms, and it slightly lowered MRR.\n\nFull answers, 30 questions graded by hand: 14 good, 7 partial, 2 wrong, 6 correctly refused (the answer wasn't in the documents), and 1 wrongly refused. The backend works end to end. The frontend isn't built yet."
   },
-  { slug: "iitbhu-distillation", name: "IIT BHU — Knowledge Distillation", group: "production", domainTag: "ML Research", oneLiner: "", stack: [] },
 
   // ──────────── Group B — Experiments ────────────
-  { slug: "whatsapp-chat-analysis", name: "WhatsApp Chat Analysis", group: "experiment", domainTag: "Data / Viz", oneLiner: "", stack: [] },
+  {
+    slug: "whatsapp-chat-analysis",
+    name: "WhatsApp Chat Analysis",
+    group: "experiment",
+    domainTag: "Data / Viz",
+    oneLiner:
+      "Upload a WhatsApp export and get stats, timelines, sentiment, topics and toxicity. It handles Hinglish chats too.",
+    status: "built",
+    githubUrl: "https://github.com/devansh101005/whatsapp_chat_analysis",
+    period: "Oct – Nov 2025",
+    stack: [
+      "Python",
+      "Streamlit",
+      "pandas",
+      "scikit-learn",
+      "Transformers",
+      "gensim",
+      "NetworkX",
+      "PyVis",
+    ],
+    overview:
+      "This started as a course project and I kept adding things. You upload an exported chat (Android and iPhone exports use different formats, and the parser handles both) and it shows activity stats, timelines, heatmaps, a word cloud with Hinglish stopwords removed, and emoji usage.\n\nThen the ML parts: sentiment, LDA topics, toxicity with Toxic-BERT, and a reply graph that shows who talks to whom.",
+    problem:
+      "Indian group chats are mostly Hinglish, and most sentiment models are trained on English tweets. That mismatch was the interesting part.",
+    approach:
+      "I trained Logistic Regression and LinearSVC on Sentiment140 (TF-IDF), and also added multilingual BERT. Messages that aren't in English get translated with deep-translator. On top of that there's a small hand-made Hinglish slang list that overrides the model for strong words it would otherwise get wrong.",
+    architecture: [
+      "Sentiment: LogReg / LinearSVC (TF-IDF, Sentiment140) plus `nlptown/bert-base-multilingual-uncased-sentiment`, with a Hinglish slang override.",
+      "Topics with gensim LDA, toxicity with `unitary/toxic-bert`.",
+      "Reply network with NetworkX, drawn interactively with PyVis.",
+      "Hinglish stopword list for the word cloud, and deep-translator for non-English messages.",
+      "pytest tests and a Dockerfile.",
+    ],
+    outcomes:
+      "Test accuracy on Sentiment140: Logistic Regression 76.78% (trained on a 1M-tweet sample), LinearSVC 73.79% (trained on 50k; it overfits at 80.95% on train). On real Hinglish chats it's worse than that, because chat messages look nothing like tweets. I wrote that limitation into the README instead of hiding it.",
+    gallery: [
+      {
+        src: "/projects/whatsapp-chat-analysis/features-positive.webp",
+        alt: "Top positive words learned by the logistic regression model",
+        caption: "The words the model thinks are most positive. All English tweet-speak (\"followfriday\"), which is exactly why Hinglish needed the slang override.",
+        kind: "figure",
+      },
+      {
+        src: "/projects/whatsapp-chat-analysis/features-negative.webp",
+        alt: "Top negative words learned by the logistic regression model",
+        caption: "And the most negative ones.",
+        kind: "figure",
+      },
+    ],
+  },
   {
     slug: "token-analyzer",
     name: "Token Analyzer",
     group: "experiment",
     domainTag: "GenAI",
     oneLiner:
-      "Streamlit app that counts tokens and estimates cost for 8 LLMs across OpenAI, Gemini, and Claude.",
+      "A small Streamlit tool that counts tokens and estimates the cost of a prompt across 8 LLMs from OpenAI, Google and Anthropic.",
     status: "built",
-    period: "Nov–Dec 2025",
+    githubUrl: "https://github.com/devansh101005/Token_Analyzer",
+    period: "Nov – Dec 2025",
     stack: ["Python", "Streamlit", "tiktoken"],
     overview:
-      "A single-page Streamlit tool for estimating token counts and input costs before committing to an LLM API call. Supports plain text and a system + user prompt playground. Built as a personal utility to make token budgeting across different providers less manual.",
+      "I kept guessing how many tokens my prompts were, so I made a one-page tool for it. Paste text (or a system + user prompt) and it shows the token count, the token IDs, how the text splits into tokens, and roughly what it would cost on each model.",
     problem:
-      "Different LLMs use different tokenizers, and non-OpenAI providers (Gemini, Claude) don't expose a local tokenizer — making it hard to estimate token counts and costs before sending a request.",
+      "Every provider tokenizes differently, and Gemini and Claude don't ship a local tokenizer, so you can't count their tokens exactly offline.",
     approach:
-      "Uses tiktoken's exact BPE encoding for OpenAI models (gpt-4o, gpt-4o-mini, the cl100k_base family) and falls back to a 4-chars-per-token heuristic for Gemini and Claude, where no public tokenizer is available. Cost is calculated as (tokens / 1,000,000) × price_per_1M.",
+      "The 4 OpenAI models use tiktoken for exact counts. The 4 Gemini/Claude models use a ~4 characters per token estimate, and the app clearly says it's an estimate. Cost is tokens ÷ 1M × the price per 1M tokens.",
     architecture: [
-      "A `MODEL_CONFIG` dict centralises tokenizer name, provider, `price_per_1M`, and an `exact_tokens` flag per model",
-      "`get_tokenizer()` dispatches on encoding family: `get_encoding()` for cl100k_base/p50k_base, `encoding_for_model()` for named models",
-      "`estimate_tokens()` applies a `len(text)//4` heuristic for Gemini/Claude, with a Streamlit warning surfaced to the user",
-      "The Prompt Playground combines the system and user fields into one string before tokenization, falling back to the raw text box if both are empty",
-      "An optional `gpt-4o-mini` cross-tokenizer comparison renders behind a checkbox, shown only for OpenAI-provider models",
-      "Two-column layout: token IDs and cost on the left, a per-token decode breakdown on the right; the breakdown is suppressed for heuristic models",
+      "One `MODEL_CONFIG` dict holds each model's tokenizer, provider, price per 1M and an exact-or-estimate flag.",
+      "`get_tokenizer()` picks `get_encoding()` or `encoding_for_model()` depending on the model.",
+      "The per-token breakdown is hidden for estimated models, since it would be made up.",
+      "An optional side-by-side with the gpt-4o-mini tokenizer.",
     ],
     outcomes:
-      "Covers 4 OpenAI models with exact BPE counts and 4 Gemini/Claude models with heuristic estimates; the pricing table is hardcoded and will drift as providers update rates.",
+      "It does its job. The prices are hardcoded, though, so they go stale whenever a provider changes its pricing.",
   },
 
   // ──────────── Group C — A Tool I Built for Myself ────────────
@@ -201,37 +386,36 @@ export const projects: Project[] = [
     group: "personal-tool",
     domainTag: "GenAI",
     oneLiner:
-      "AI drafting copilot: pulls trending Reddit/HN/GitHub content and generates personalized tweet drafts, delivered via Telegram.",
+      "A drafting helper for tech posts. Twice a day it pulls what's trending on Reddit, Hacker News and GitHub, writes drafts in the user's own style, and sends them on Telegram for review. It never posts by itself.",
     status: "in-progress",
-    period: "May–Jun 2026",
+    githubUrl: "https://github.com/devansh101005/TwitX",
+    period: "May – Jun 2026",
     stack: [
       "Next.js",
       "TypeScript",
-      "Express.js",
+      "Express",
       "PostgreSQL",
       "Prisma",
-      "Groq (llama-3.3-70b)",
+      "Groq",
       "Clerk",
       "Telegram Bot API",
-      "Tailwind CSS v4",
       "GitHub Actions",
     ],
     overview:
-      "A content drafting assistant for Tech Twitter creators. It runs a scheduled pipeline twice daily — scraping Reddit, Hacker News, and GitHub, filtering for the user's chosen niches, and calling an LLM to write tweet/thread drafts in their voice. Drafts land in Telegram for review; the user copies and posts manually.",
+      "Posting regularly about tech takes a lot of time just to find topics. TwitX runs a pipeline twice a day. It scrapes Reddit, Hacker News and GitHub, keeps what matches each user's topics, and asks an LLM to write drafts using that user's past posts as style examples. The drafts arrive on Telegram and the user decides what to post. It never posts on its own.",
     problem:
-      "Fitting daily content creation into a dev's schedule: sourcing relevant topics, drafting in a consistent voice, and reviewing efficiently — without building an auto-posting bot.",
+      "Finding topics and writing drafts every day takes too much time. The goal was help with drafting, not a bot that posts for you.",
     approach:
-      "Keyword-weighted relevance scoring narrows 50+ scraped items to the top 15 before hitting the LLM. A structured prompt injects the user's own past tweets as voice anchors, plus liked/skipped feedback history as positive/negative signals. GitHub Actions replaces node-cron so the pipeline runs reliably without a persistent server.",
+      "A simple relevance score cuts the scraped items down to the top 15 before anything goes to the LLM. The prompt includes the user's past posts and which drafts they liked or skipped. GitHub Actions runs the pipeline on a schedule, so no server has to run all day.",
     architecture: [
-      "A custom `dispatchUpdate` manually awaits all Telegram bot async handlers before responding — Vercel serverless kills the function the moment the HTTP response is sent, which would drop `sendMessage` calls under the standard `bot.processUpdate()`",
-      "Relevance scorer: score = keywordHits × 10 + log(upvote_score + 1) × 5; the top 15 pass to the LLM — a hard cap prevents prompt bloat",
-      "An OpenAI-compatible AI client routes to Groq by default but supports any OpenAI-compatible gateway via `AI_BASE_URL` / `AI_API_KEY` — no code change needed to swap providers",
-      "Two-level JSON parse in `parseDrafts`: tries a full array parse first, then falls back to scanning for complete `{}` objects individually to salvage responses cut off by `max_tokens`",
-      "A Clerk `clerkId` on the `User` model; a `resolveAppUser` middleware auto-provisions the DB row on first sign-in, mapping Clerk identity to the app's own user record",
-      "A GitHub Actions cron fires at 09:00 and 19:00 UTC and runs `npm run pipeline:run` directly — sidestepping Vercel's 10s hobby timeout for the long per-user pipeline loop",
+      "Relevance = keyword hits × 10 + log(upvotes + 1) × 5. The top 15 go to the LLM, which keeps the prompt small.",
+      "On Vercel the function gets killed as soon as the HTTP response is sent, which would drop Telegram replies. A custom `dispatchUpdate` awaits every bot handler before responding.",
+      "`parseDrafts` tries to parse the full JSON array first. If the model got cut off by `max_tokens`, it rescues whatever complete `{}` objects it can find.",
+      "It uses Groq by default, but any OpenAI-compatible provider works by setting `AI_BASE_URL` / `AI_MODEL`, with no code changes.",
+      "A GitHub Actions cron (09:00 and 19:00 UTC) runs the pipeline, which gets around Vercel's short function timeout.",
     ],
     outcomes:
-      "MVP shipped with Telegram delivery working end-to-end; Discord delivery is stubbed but not implemented. Prompt personalization via voice samples and feedback history is wired into the schema and prompt builder.",
+      "The pipeline works end to end with Telegram. Discord delivery isn't implemented yet (it's just a stub).",
   },
 
   // ──────────── Group D — Guided Builds (Learning) ────────────
@@ -242,37 +426,36 @@ export const projects: Project[] = [
     domainTag: "Full-stack",
     guided: true,
     oneLiner:
-      "Multi-tool AI SaaS with text generation and image manipulation, gated behind a free-tier counter and Clerk auth.",
+      "An AI SaaS with six tools (article writer, blog titles, image generation, background/object removal, resume review), with Clerk auth and a free-tier limit.",
     status: "live",
     liveUrl: "https://devxaiclient.vercel.app",
-    githubUrl: "https://github.com/devansh101005/aisaas",
-    period: "2025",
+    githubUrl: "https://github.com/devansh101005/AI-saas",
+    period: "Oct 2025 – Mar 2026",
+    image: {
+      src: "/projects/devx-ai/cover.webp",
+      alt: "DevX AI tools grid",
+    },
     stack: [
       "React 19",
       "Express 5",
-      "Neon PostgreSQL",
-      "Google Gemini",
+      "Neon Postgres",
+      "Gemini",
       "Cloudinary",
-      "ClipDrop API",
+      "ClipDrop",
       "Clerk",
       "Zod",
     ],
     overview:
-      "devX.ai is a full-stack AI SaaS that exposes six tools: article writing, blog-title generation, text-to-image, background removal, object removal, and PDF resume review. Free users are capped at 10 total generations; premium users have unlimited access. The React frontend and Express backend are deployed as independent Vercel projects.",
-    problem:
-      "Orchestrating multiple third-party AI APIs (Gemini for text, ClipDrop for image generation, Cloudinary for image transforms) behind a single authenticated API while enforcing a two-tier usage model without a dedicated billing service.",
+      "I built this by following a tutorial to learn the React + Express + Clerk stack, then changed and deployed it myself. There are six tools: article writing, blog titles, text-to-image, background removal, object removal, and PDF resume review. Free users get 10 generations in total.",
     approach:
-      "Free-tier usage is tracked as a counter in Clerk's privateMetadata, cached in-process for 60 seconds to cut Clerk API calls and invalidated immediately after any write. Premium gating is a simple check in shared helpers (requirePremium / checkPlanLimit) reused across all controllers. Gemini is called via the OpenAI SDK using Google's OpenAI-compatible base URL, so no extra SDK is needed. Cloudinary's gen_remove transformation handles object removal server-side without a separate ML call.",
+      "Gemini is called through the OpenAI SDK using Google's OpenAI-compatible URL. The free-tier counter lives in Clerk's `privateMetadata`, with a 60s in-memory cache so I'm not calling Clerk on every request.",
     architecture: [
-      "Gemini 2.0 Flash accessed via the OpenAI SDK with `baseURL` pointing to Google's OpenAI-compatible endpoint (`generativelanguage.googleapis.com/v1beta/openai/`)",
-      "User plan/usage stored in Clerk `privateMetadata`; an in-memory Map cache (60s TTL) with explicit invalidation after metadata writes avoids per-request Clerk API calls",
-      "Two-tier rate limiting: 105 req/15 min general, 25 req/15 min on AI routes; `trust proxy 1` set so Vercel's X-Forwarded-For is used for IP keying",
-      "Zod schemas validate AI request bodies; HTML tags are stripped from all prompts before they reach any AI API",
-      "Cloudinary `background_removal` and `gen_remove` effects for image editing; ClipDrop REST API for text-to-image (binary arraybuffer → base64 → Cloudinary upload)",
-      "PDF resumes parsed to plain text with pdf-parse-fork server-side, then the extracted text is sent to Gemini for review; temp files cleaned up after read",
+      "Two rate limits: 105 requests per 15 min in general and 25 per 15 min on AI routes, with `trust proxy` set so Vercel's forwarded IP is used.",
+      "Zod validates request bodies, and HTML is stripped from prompts before they reach any AI API.",
+      "Image editing uses Cloudinary's `background_removal` and `gen_remove`. ClipDrop handles text-to-image.",
     ],
     outcomes:
-      "Shipped and deployed. Rate-limit and CORS fixes across the last 10 commits reflect the debugging the serverless deployment needed around proxy IP detection and Vercel's cold-start behavior.",
+      "Deployed as two Vercel projects (client and server). After the tutorial part was done, I came back and fixed the CORS, security and rate-limit problems that only showed up once it was running on serverless.",
   },
   {
     slug: "dentcare",
@@ -281,11 +464,12 @@ export const projects: Project[] = [
     domainTag: "Full-stack",
     guided: true,
     oneLiner:
-      "Dental clinic web app with an AI voice assistant, appointment booking, and an admin dashboard.",
+      "A dental clinic app with appointment booking, email confirmations, an admin dashboard and a voice AI assistant.",
     status: "built",
-    period: "Nov–Dec 2025",
+    githubUrl: "https://github.com/devansh101005/DentCare",
+    period: "Nov – Dec 2025",
     stack: [
-      "Next.js 15",
+      "Next.js",
       "TypeScript",
       "PostgreSQL",
       "Prisma",
@@ -293,24 +477,15 @@ export const projects: Project[] = [
       "Vapi",
       "Resend",
       "TanStack Query",
-      "Tailwind CSS",
     ],
     overview:
-      "DentCare is a full-stack dental appointment platform where patients book appointments with dentists and get dental guidance via a real-time AI voice assistant. Admins manage doctors and track appointment status through a separate dashboard. Built as a portfolio project.",
-    problem:
-      "Needed a single app to handle patient auth, conflict-free appointment booking, admin doctor management, and AI-assisted dental consultation — without building a custom auth backend.",
-    approach:
-      "Clerk handles auth and subscription tiers; Prisma + PostgreSQL store appointments with booked-slot queries to prevent double-booking; the Vapi SDK powers the voice-AI session; Resend sends confirmation emails via a React Email template after a successful booking mutation.",
+      "A guided build I did to learn Next.js server actions, Prisma and TanStack Query. Patients book appointments with dentists, get a confirmation email, and on a paid plan can talk to a voice assistant. An admin manages doctors and appointments.",
     architecture: [
-      "Clerk user sync via a server action on first page load — polls `clerkId` uniqueness before inserting into the `users` table",
-      "Admin gate as an env-var email comparison in a Next.js server component (`ADMIN_EMAIL !== userEmail` redirects to /dashboard)",
-      "Slot-conflict prevention: `getBookedTimeSlots` queries appointments with status IN [CONFIRMED, COMPLETED] for a given doctorId + date before rendering available times",
-      "A TanStack Query mutation (`useBookAppointment`) invalidates the `getUserAppointments` cache on success, triggering an automatic UI refresh",
-      "Resend email sent inline in the booking mutation's `onSuccess` callback using a React Email component (`AppointmentConfirmationEmail`)",
-      "Vapi voice session managed via event listeners (`call-start`, `call-end`, `speech-start`, `message`) set up and torn down in a single `useEffect`; the pro-plan gate is checked before rendering the widget",
+      "Booked slots are checked against appointments with status CONFIRMED or COMPLETED, so the same slot can't be booked twice.",
+      "The admin page is gated by comparing the signed-in email to `ADMIN_EMAIL` in a server component.",
+      "The confirmation email is a React Email template sent through Resend.",
+      "The voice assistant (Vapi) only shows up for users on a paid Clerk plan.",
     ],
-    outcomes:
-      "Covers the full booking lifecycle end to end: auth, slot selection, conflict avoidance, confirmation email, and voice AI — all within a single Next.js app.",
   },
   {
     slug: "sellwell",
@@ -319,37 +494,30 @@ export const projects: Project[] = [
     domainTag: "Full-stack",
     guided: true,
     oneLiner:
-      "Multi-vendor e-commerce platform where sellers apply to open stores, list products, and buyers pay via Stripe or COD.",
-    status: "in-progress",
+      "A multi-vendor store. Sellers apply to open a shop, and buyers check out with Stripe or cash on delivery.",
+    status: "built",
+    githubUrl: "https://github.com/devansh101005/Sell-Well",
     period: "Dec 2025 – Jan 2026",
     stack: [
-      "Next.js 15",
+      "Next.js",
       "PostgreSQL",
       "Prisma",
       "Clerk",
       "Stripe",
       "Inngest",
       "ImageKit",
-      "OpenAI",
       "Redux Toolkit",
-      "Tailwind CSS",
     ],
     overview:
-      "Sell Well is a multi-vendor marketplace built with the Next.js App Router. Sellers register stores that go through an admin approval flow before going live. Buyers browse products, apply coupons, and check out via Stripe or cash-on-delivery.",
-    problem:
-      "Coordinating multi-vendor order splitting, payment confirmation via async webhook, and background user-sync across Clerk and a Postgres database — without tight coupling.",
-    approach:
-      "Orders are split per seller at checkout time using a Map over cart items. Stripe session metadata carries the order IDs; a webhook handler resolves payment success/failure and updates order state. Clerk webhooks are forwarded to Inngest durable functions that sync user lifecycle events (create/update/delete) and schedule coupon deletion at expiry using step.sleepUntil.",
+      "A guided build to learn Stripe webhooks and background jobs with Inngest. New stores stay pending until an admin approves them. A cart with products from several sellers gets split into one order per seller at checkout.",
     architecture: [
-      "Admin approval gate: stores start `status='pending'` / `isActive=false`; a `POST /api/admin/approve-store` flips both fields after admin review",
-      "Stripe checkout: `POST /api/orders` creates per-seller Order rows, embeds orderIds in session metadata, and returns a session URL; the `POST /api/stripe` webhook uses `constructEvent` signature verification to mark orders paid or delete them on cancellation",
-      "Inngest durable functions handle Clerk `user.created/updated/deleted` events and schedule coupon auto-deletion via `step.sleepUntil` at the coupon's `expiresAt`",
-      "Coupon logic enforces three constraints at order time: new-user-only, member-only (checked via Clerk `has({ plan: 'plus' })`), and expiry",
-      "AI-assisted product listing: uploading the first product image triggers a vision call to OpenAI that returns name + description JSON, pre-filling the form",
-      "Cart stored as a JSON column on the User row; cleared atomically in the same Prisma transaction that confirms payment",
+      "The Stripe webhook verifies the signature with `constructEvent`, then marks the orders paid or deletes them if checkout is cancelled.",
+      "Clerk user events go to Inngest functions that keep the database in sync.",
+      "Coupons can be restricted to new users or members (checked with Clerk `has({ plan: 'plus' })`).",
+      "Uploading the first product image calls an OpenAI vision model to pre-fill the name and description.",
     ],
     outcomes:
-      "Project is functional. Core flows — auth, store approval, Stripe checkout, Inngest sync — are wired up and structurally correct.",
+      "The main flows work: store approval, Stripe checkout with webhook verification, and the Clerk-to-database sync through Inngest.",
   },
 ];
 

@@ -2,6 +2,9 @@ import { ImageResponse } from "next/og";
 import { loadGoogleFont, OG } from "@/lib/og";
 import { projects, getProject } from "@/content";
 
+// Static export (Cloudflare Pages): generated once at build time.
+export const dynamic = "force-static";
+
 export const size = OG.size;
 export const contentType = OG.contentType;
 
@@ -18,7 +21,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
   const [serif, mono] = await Promise.all([
     loadGoogleFont("Fraunces", 900, `${name} ${oneLiner}`),
-    loadGoogleFont("JetBrains Mono", 500, "PROJECT Dv. DEVANSH — PORTFOLIO"),
+    loadGoogleFont("JetBrains Mono", 500, "PROJECT Dv. DEVANSH · PORTFOLIO"),
   ]);
   const serifFamily = serif ? "Fraunces" : "serif";
   const monoFamily = mono ? "JetBrains Mono" : "monospace";
@@ -77,7 +80,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           }}
         >
           <span style={{ display: "flex", width: 44, height: 3, background: OG.accent }} />
-          DEVANSH — PORTFOLIO
+          DEVANSH · PORTFOLIO
         </div>
       </div>
     ),

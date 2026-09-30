@@ -44,3 +44,6 @@ next-env.d.ts
 
 TODO.md
 
+
+# Playwright MCP scratch (raw screenshots, snapshots)
+.playwright-mcp/

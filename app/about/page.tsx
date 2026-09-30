@@ -2,32 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Eyebrow from "@/components/Eyebrow";
 import Reveal from "@/components/Reveal";
-import ProfileCard from "@/components/ProfileCard";
 import GithubHeatmap from "@/components/GithubHeatmap";
-import { profile, education } from "@/content";
+import HeroAsciiField from "@/components/HeroAsciiField";
+import { education } from "@/content";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "About Devansh — a backend-leaning full-stack engineer (Shiv Nadar University, B.Tech CSE '27) closing an ML-depth gap on purpose through research at IIT BHU.",
+    "About Devansh, a full-stack engineer (Shiv Nadar University, B.Tech CSE '27) who works across backend and ML/deep learning, and is now getting into distributed systems.",
   alternates: { canonical: "/about" },
   openGraph: {
     title: "About · Devansh",
     description:
-      "A backend-leaning full-stack engineer closing an ML-depth gap on purpose.",
+      "Backend, ML and deep learning, and now distributed systems.",
     url: "/about",
     images: ["/opengraph-image"],
   },
 };
 
-const profileItems = [
-  { k: "Education", v: education.school },
-  { k: "Degree", v: "B.Tech CSE" },
-  { k: "Class of", v: education.classOf },
-  { k: "Focus", v: education.focus },
-  { k: "Based in", v: profile.location },
-  { k: "Open to", v: profile.openTo },
-];
+// One quiet line instead of the old PROFILE card (removed at Devansh's request).
+const facts = [`B.Tech CSE · ${education.school}`, `Class of ${education.classOf}`];
 
 export default function AboutPage() {
   return (
@@ -41,39 +35,54 @@ export default function AboutPage() {
         </h1>
       </header>
 
-      <section className="grid grid-cols-1 gap-16 border-b border-line py-16 lg:grid-cols-[1.45fr_1fr]">
+      <section className="grid grid-cols-1 gap-14 border-b border-line py-16 lg:grid-cols-[1.45fr_1fr]">
         <div>
           <Reveal variant="left">
             <p className="max-w-[24ch] font-display text-[clamp(23px,3vw,31px)] font-semibold leading-[1.34] tracking-[-0.01em] first-letter:float-left first-letter:mr-3 first-letter:mt-1.5 first-letter:font-black first-letter:text-[3.4em] first-letter:leading-[0.78] first-letter:text-accent">
-              I build software that real people use, then go deeper where the hard
-              problems are.
+              I like building the parts that have to work, then going deeper where
+              the problems get hard.
             </p>
           </Reveal>
           <div className="mt-8 space-y-[18px] text-[17px] leading-relaxed">
             <p className="max-w-[58ch]">
-              My center of gravity is full-stack and backend integration —
-              payments, authentication, exam engines, job queues, the
-              unglamorous plumbing that has to work. The clearest example is{" "}
-              <span className="text-accent">Be Educated</span>, a production
-              ed-tech LMS I built solo and that serves real users today.
+              I work across backend and ML, and I like it most when the two
+              meet. On the backend I&apos;ve built payments, logins, exam engines
+              and job queues, the parts that just have to work. The clearest
+              example is <span className="text-accent">Be Educated</span>, the
+              full platform I built on my own for a JEE/NEET coaching institute.
             </p>
             <p className="max-w-[58ch]">
-              The research internship at IIT BHU is a deliberate move, not a
-              detour. I&apos;m closing an ML-depth gap on purpose — compressing
-              223M-parameter multimodal models into a 3–5M-parameter student for
-              in-browser inference. I treat that depth as something to earn, not
-              to claim.
+              ML and deep learning are the other half. At IIT BHU I built
+              LightDep, a 3.96 MB distilled model for depression screening that
+              runs in a browser, and the paper got accepted at IEEE ANTS 2026. I
+              also built the cross-attention module for BioX-DTI, a drug–target
+              interaction model accepted at IEEE TENCON 2026, and a RAG system
+              for Indian legal documents.
+            </p>
+            <p className="max-w-[58ch]">
+              Lately I&apos;ve been getting into distributed systems. I&apos;ve
+              built a job queue, a distributed lock service and a rate limiter on
+              Redis, mostly to see what breaks when things have to scale.
             </p>
             <p className="max-w-[58ch]">
               I care about honest engineering: real numbers, verifiable claims,
               and systems that hold up when someone actually depends on them.
             </p>
           </div>
+          <p className="mt-9 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11.5px] uppercase tracking-[0.08em] text-muted">
+            {facts.map((f, i) => (
+              <span key={f}>
+                {f}
+                {i < facts.length - 1 && <span className="ml-3 text-line-strong">·</span>}
+              </span>
+            ))}
+          </p>
         </div>
 
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+        {/* Same ASCII field as the home hero (cursor spotlight on hover). Desktop only. */}
+        <aside className="hidden lg:sticky lg:top-24 lg:block lg:self-start">
           <Reveal variant="right">
-            <ProfileCard items={profileItems} />
+            <HeroAsciiField className="ml-auto h-[380px] w-[380px]" />
           </Reveal>
         </aside>
       </section>
@@ -89,7 +98,7 @@ export default function AboutPage() {
           <span className="text-accent">&rdquo;</span>
         </blockquote>
         <cite className="mt-5 block font-mono text-xs uppercase not-italic tracking-[0.06em] text-muted">
-          — How I think about building
+          How I think about building
         </cite>
       </section>
 
@@ -100,19 +109,10 @@ export default function AboutPage() {
         </h2>
         <p className="max-w-[60ch] text-[17px]">
           When I&apos;m not shipping, I&apos;m usually deep in a quiz set or
-          reading about Indian civilizational history. Both are the same habit,
-          really — chasing specifics until they&apos;re precise.
+          reading about Indian civilizational history. Honestly, it&apos;s the
+          same habit as engineering: chasing the details until they&apos;re
+          exactly right.
         </p>
-        <div className="mt-6 flex flex-wrap gap-2">
-          {["Competitive quizzing", "Indian history", "Tech Twitter"].map((t) => (
-            <span
-              key={t}
-              className="rounded border border-line px-[11px] py-[5px] font-mono text-[11px] text-muted"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
         <Link href="/contact" className="viewall mt-10 inline-block">
           Get in touch →
         </Link>

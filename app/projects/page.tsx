@@ -14,7 +14,7 @@ import type { Project } from "@/content/types";
 export const metadata: Metadata = {
   title: "Projects",
   description:
-    "Projects by Devansh — shipped production work and original systems, experiments, a personal tool, and guided learning builds.",
+    "Projects by Devansh: shipped products and original systems, experiments, a personal tool, and guided learning builds.",
   alternates: { canonical: "/projects" },
   openGraph: {
     title: "Projects · Devansh",
@@ -54,7 +54,7 @@ function FullGrid({ items }: { items: Project[] }) {
     <div className="grid grid-cols-1 gap-7 sm:grid-cols-2">
       {items.map((p, i) => (
         <Reveal key={p.slug} variant={i % 2 === 0 ? "left" : "right"}>
-          <ProjectCard p={p} />
+          <ProjectCard p={p} priority={i < 2} />
         </Reveal>
       ))}
     </div>
@@ -78,11 +78,12 @@ export default function ProjectsPage() {
     <main className="mx-auto max-w-prose px-8 py-14">
       <header className="mb-10">
         <h1 className="font-display text-[clamp(44px,8vw,84px)] font-black leading-[0.98] tracking-[-0.02em]">
-          Projects<span className="text-accent">.</span>
+          Projects<span className="text-accent-fill">.</span>
         </h1>
         <p className="mt-4 max-w-[60ch] text-[15.5px] text-muted">
-          Organized by what each one is — shipped products and original systems
-          first, then experiments, a personal tool, and guided learning builds.
+          Grouped by what each one is. Shipped products and my own systems come
+          first, then experiments, a tool I built for myself, and the guided
+          builds I did while learning.
         </p>
       </header>
 
@@ -91,7 +92,7 @@ export default function ProjectsPage() {
         <GroupHeader
           label="Production & Systems Work"
           title="Production & systems work"
-          blurb="Shipped products and original systems — the work I'd put my name on."
+          blurb="Shipped products and systems I designed myself. This is the work I'd put my name on."
         />
         <FullGrid items={productionProjects} />
       </section>
@@ -101,7 +102,7 @@ export default function ProjectsPage() {
         <GroupHeader
           label="Experiments"
           title="Experiments"
-          blurb="Smaller builds for learning and exploration."
+          blurb="Smaller things I built to learn something or try an idea."
         />
         <CompactGrid items={experimentProjects} />
       </section>
@@ -111,7 +112,7 @@ export default function ProjectsPage() {
         <GroupHeader
           label="A Tool I Built for Myself"
           title="A tool I built for myself"
-          blurb="Built to scratch my own itch — and to feed my Tech Twitter. A personal-use tool, not a product."
+          blurb="Built to scratch my own itch. A personal-use tool, not a product."
         />
         <CompactGrid items={personalToolProjects} />
       </section>
@@ -121,7 +122,7 @@ export default function ProjectsPage() {
         <GroupHeader
           label="Guided Builds (Learning)"
           title="Guided builds"
-          blurb="Projects I built by following tutorials to learn new stacks. Included for completeness — the original work is above."
+          blurb="Projects I built by following tutorials to learn new stacks. They're here for completeness. My own work is above."
         />
         <CompactGrid items={guidedProjects} />
       </section>

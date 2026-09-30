@@ -98,11 +98,18 @@ export default function HeroAsciiField({ className = "" }: { className?: string 
       }
     };
 
-    const loop = () => {
-      t += 0.016;
-      render();
+    // Perf: only animate while on-screen and the tab is visible; ~30 fps is
+    // plenty for this drift and halves the canvas work.
+    let visible = true, last = 0;
+    const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
+      if (!visible || document.hidden || now - last < 33) return;
+      last = now;
+      t += 0.032;
+      render();
     };
+    const io = new IntersectionObserver(([e]) => (visible = e.isIntersecting));
+    io.observe(cv);
 
     readColors();
     resize();
@@ -128,6 +135,7 @@ export default function HeroAsciiField({ className = "" }: { className?: string 
 
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       ro.disconnect();
       mo.disconnect();
       cv.removeEventListener("pointermove", onMove);

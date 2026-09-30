@@ -1,5 +1,6 @@
 import TiltCard from "./TiltCard";
 import TagList from "./TagList";
+import ProjectCover from "./ProjectCover";
 import type { Project } from "@/content/types";
 
 function CardLink({ href, label }: { href: string; label: string }) {
@@ -8,7 +9,7 @@ function CardLink({ href, label }: { href: string; label: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative z-10 font-mono text-[11px] text-muted transition-colors hover:text-accent"
+      className="relative z-10 inline-flex min-h-6 items-center py-1 font-mono text-[11px] text-muted transition-colors hover:text-accent"
     >
       {label}
     </a>
@@ -20,16 +21,16 @@ function CardLink({ href, label }: { href: string; label: string }) {
  * name + date → one-liner → tech tags → optional GitHub/Live links. Whole card
  * links to the detail page. Renders gracefully while content is still empty.
  */
-export default function ProjectCard({ p }: { p: Project }) {
+export default function ProjectCard({ p, priority = false }: { p: Project; priority?: boolean }) {
   const hasGithub = Boolean(p.githubUrl && p.githubUrl !== "#");
   const hasLive = Boolean(p.liveUrl);
 
   return (
-    <TiltCard href={`/projects/${p.slug}`} ariaLabel={`${p.name} — view project`}>
+    <TiltCard href={`/projects/${p.slug}`} ariaLabel={`${p.name}: view project`}>
       <div className="card-img relative aspect-[16/9] overflow-hidden border-b border-line bg-bg">
-        <span className="card-img-inner font-display text-[56px] font-black text-line-strong">
-          {p.name.charAt(0)}
-        </span>
+        <div className="card-img-inner">
+          <ProjectCover p={p} sizes="(min-width: 900px) 520px, 100vw" priority={priority} />
+        </div>
       </div>
       <div className="p-[22px]">
         <div className="mb-2 flex items-center justify-between gap-2">

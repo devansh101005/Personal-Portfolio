@@ -8,7 +8,7 @@ function CardLink({ href, label }: { href: string; label: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative z-10 font-mono text-[11px] text-muted transition-colors hover:text-accent"
+      className="relative z-10 inline-flex min-h-6 items-center py-1 font-mono text-[11px] text-muted transition-colors hover:text-accent"
     >
       {label}
     </a>
@@ -25,7 +25,7 @@ export default function CompactProjectCard({ p }: { p: Project }) {
   const hasLive = Boolean(p.liveUrl);
 
   return (
-    <TiltCard href={`/projects/${p.slug}`} ariaLabel={`${p.name} — view project`}>
+    <TiltCard href={`/projects/${p.slug}`} ariaLabel={`${p.name}: view project`}>
       <div className="p-5">
         <div className="mb-2 flex items-center justify-between gap-2">
           <span className="font-mono text-[10.5px] uppercase tracking-[0.1em] text-accent">

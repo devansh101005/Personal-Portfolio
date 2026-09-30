@@ -3,6 +3,7 @@ import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import ResumeRequest from "@/components/ResumeRequest";
 import { SITE, SITE_URL, SOCIALS } from "@/lib/site";
 
 // §2 typography — Fraunces (display, weights 600 + 900 via CSS, high optical
@@ -65,7 +66,7 @@ const personLd = {
   url: SITE_URL,
   jobTitle: SITE.jobTitle,
   alumniOf: { "@type": "CollegeOrUniversity", name: SITE.university },
-  sameAs: [SOCIALS.github, SOCIALS.twitter, SOCIALS.linkedin, SOCIALS.hashnode].filter(
+  sameAs: [SOCIALS.github, SOCIALS.linkedin, SOCIALS.hashnode].filter(
     (u) => u && u !== "#"
   ),
 };
@@ -88,6 +89,7 @@ export default function RootLayout({
         <Nav />
         {children}
         <Footer />
+        <ResumeRequest />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}

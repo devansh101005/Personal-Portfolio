@@ -20,8 +20,9 @@ export default function Nav() {
   return (
     <nav className="sticky top-0 z-50 border-b border-line bg-bg">
       <div className="mx-auto flex h-16 max-w-prose items-center justify-between px-8">
-        <Link href="/" aria-label="Devansh — home">
-          <Monogram className="text-[23px]" />
+        {/* Fixed width = expanded "Devansh." so the hover doesn't shift the nav links. */}
+        <Link href="/" className="group inline-block w-[112px]">
+          <Monogram className="text-[23px]" expandable />
         </Link>
 
         <div className="hidden items-center gap-[30px] md:flex">
