@@ -1,7 +1,11 @@
 # The site is a static export, so the GitHub contribution heatmap is baked in
-# at build time. This rebuilds the Cloudflare Pages site once a day to keep it
-# fresh. Needs one repo secret: CF_PAGES_DEPLOY_HOOK (Pages → Settings →
-# Builds & deployments → Deploy hooks).
+# at build time. This rebuilds and redeploys the Cloudflare Worker once a day
+# to keep it fresh.
+#
+# Needs two repo secrets (GitHub → Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   — Cloudflare → My Profile → API Tokens → Create Token
+#                            → template "Edit Cloudflare Workers"
+#   CLOUDFLARE_ACCOUNT_ID  — Cloudflare dashboard → Account home (right side)
 name: Nightly rebuild
 
 on:
@@ -13,5 +17,16 @@ jobs:
   rebuild:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Cloudflare Pages deploy hook
-        run: curl -fsS -X POST "${{ secrets.CF_PAGES_DEPLOY_HOOK }}"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://portfolio.devansh10.workers.dev
+      - run: npx wrangler@4 deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

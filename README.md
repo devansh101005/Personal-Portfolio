@@ -85,8 +85,8 @@ The resume is shared **on request**, not as a public PDF. Any "Resume" link open
 
 Everything absolute (canonical URLs, OG images, sitemap, `robots.txt`) flows through one env var.
 
-1. Add the domain in Cloudflare Pages → your project → Custom domains.
-2. Set `NEXT_PUBLIC_SITE_URL=https://yourdomain.com` in the Pages environment variables (and locally in `.env`), then redeploy.
+1. Add the domain under the Worker → Domains → Add Domain.
+2. Set `NEXT_PUBLIC_SITE_URL=https://yourdomain.com` in the Worker build variables (and in `.github/workflows/nightly-rebuild.yml`), then redeploy.
 
 That's the only change.
 
@@ -101,16 +101,17 @@ Copy `.env.example` → `.env`:
 
 ---
 
-## Deploy (Cloudflare Pages, static export)
+## Deploy (Cloudflare Workers, static export)
 
-The site is a static export (`output: "export"` in `next.config.mjs`): `npm run build` writes plain files to `/out`.
+Live at **https://portfolio.devansh10.workers.dev**.
 
-1. Push the repo to GitHub.
-2. Cloudflare dashboard → Workers & Pages → Create → **Pages** → Connect to Git → pick the repo.
-3. Build settings: framework preset **Next.js (Static HTML Export)**, build command `npm run build`, output directory `out`.
-4. Environment variables: `NEXT_PUBLIC_SITE_URL=https://<project>.pages.dev` (or your custom domain). Node version comes from `.node-version` (20).
-5. Deploy. `public/_headers` sets PNG content-type for the share images and long caching for build assets.
-6. Nightly heatmap refresh: Pages → Settings → Builds → **Deploy hooks** → create one, then add it as the GitHub repo secret `CF_PAGES_DEPLOY_HOOK`. `.github/workflows/nightly-rebuild.yml` calls it at 02:00 IST.
+The site is a static export (`output: "export"` in `next.config.mjs`): `npm run build` writes plain files to `/out`, and `wrangler.jsonc` tells Cloudflare to serve that folder (no Worker code runs).
+
+- Cloudflare Workers Builds is connected to this repo: every push to `main` runs `npm run build` then `npx wrangler deploy`.
+- Build variable (Worker → Settings → Build → Variables): `NEXT_PUBLIC_SITE_URL=https://portfolio.devansh10.workers.dev` (or the custom domain once added).
+- The Worker name in the dashboard must match `"name"` in `wrangler.jsonc` (`portfolio`).
+- `public/_headers` sets PNG content-type for the share images and long caching for build assets.
+- Nightly heatmap refresh: `.github/workflows/nightly-rebuild.yml` rebuilds and deploys at 02:00 IST. Needs repo secrets `CLOUDFLARE_API_TOKEN` ("Edit Cloudflare Workers" template) and `CLOUDFLARE_ACCOUNT_ID`.
 
 > Real search ranking also needs the domain to be linked-to and crawled over time — the code makes the site *eligible* to rank (metadata, OG, JSON-LD, sitemap, fast static HTML); it can't guarantee #1 on day one.
 
