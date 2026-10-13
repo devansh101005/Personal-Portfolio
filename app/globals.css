@@ -379,6 +379,132 @@ body::before {
   }
 }
 
+/* ── Blog post typography (.post-body = rendered Markdown). Editorial: serif
+   headings, comfortable 17px body, mono code on the surface tone. ── */
+.post-body {
+  font-size: 17px;
+  line-height: 1.75;
+  max-width: 70ch;
+}
+.post-body > * + * {
+  margin-top: 1.15em;
+}
+.post-body h2,
+.post-body h3 {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  scroll-margin-top: 6rem;
+}
+.post-body h2 {
+  font-size: clamp(24px, 3vw, 30px);
+  margin-top: 2.2em;
+}
+.post-body h3 {
+  font-size: 21px;
+  margin-top: 1.8em;
+}
+.post-body .anchor {
+  position: absolute;
+  left: -1.1em;
+  color: var(--border-strong);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.post-body h2:hover .anchor,
+.post-body h3:hover .anchor {
+  opacity: 1;
+}
+.post-body a {
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.post-body strong {
+  font-weight: 600;
+}
+.post-body ul,
+.post-body ol {
+  padding-left: 1.4em;
+}
+.post-body ul {
+  list-style: disc;
+}
+.post-body ol {
+  list-style: decimal;
+}
+.post-body li + li {
+  margin-top: 0.45em;
+}
+.post-body li::marker {
+  color: var(--accent);
+}
+.post-body :not(pre) > code,
+.post-inline code {
+  font-family: var(--font-mono);
+  font-size: 0.84em;
+  padding: 0.12em 0.4em;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--text);
+}
+.post-body pre {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.65;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  overflow-x: auto;
+}
+.post-body pre code {
+  font-family: inherit;
+}
+.post-body img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  background: #fff;
+}
+.post-body .table-wrap {
+  overflow-x: auto;
+}
+.post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.post-body th,
+.post-body td {
+  border-bottom: 1px solid var(--border);
+  padding: 10px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+.post-body th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom-color: var(--border-strong);
+}
+.post-body blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1em;
+  color: var(--muted);
+}
+
 /* ── Nav monogram: "Dv." expands to "Devansh." on hover / keyboard focus. ── */
 .mono-x {
   display: inline-block;

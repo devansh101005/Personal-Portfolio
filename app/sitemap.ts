@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { projects } from "@/content";
+import { localPosts } from "@/content/posts";
 
 // Static export (Cloudflare Pages): generated once at build time.
 export const dynamic = "force-static";
@@ -24,5 +25,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...projectEntries];
+  const postEntries: MetadataRoute.Sitemap = localPosts.map((p) => ({
+    url: `${SITE_URL}/blog/${p.slug}/`,
+    lastModified: new Date(p.date),
+    changeFrequency: "yearly",
+    priority: 0.6,
+  }));
+
+  return [...staticEntries, ...projectEntries, ...postEntries];
 }

@@ -1,83 +1,82 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Eyebrow from "@/components/Eyebrow";
-import { profile } from "@/content";
+import Reveal from "@/components/Reveal";
+import { posts } from "@/content/posts";
+import { renderInline, renderPost } from "@/lib/blog";
+import { formatDate } from "@/lib/date";
 
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Writing by Devansh on backend systems, ML, and shipping real software, published on Hashnode.",
-  alternates: { canonical: "/blog" },
+    "Writing by Devansh on ML systems, backend engineering, and the bugs and lessons from building real projects.",
+  alternates: { canonical: "/blog/" },
   openGraph: {
     title: "Blog · Devansh",
-    description: "Writing on backend systems, ML, and shipping real software.",
-    url: "/blog",
+    description: "Writing on ML systems, backend engineering, and lessons from real projects.",
+    url: "/blog/",
     images: ["/opengraph-image"],
   },
 };
 
-// Hashnode publication URL (env override wins; otherwise the profile constant).
-const hashnodeUrl =
-  process.env.NEXT_PUBLIC_HASHNODE_URL || profile.socials.hashnode;
-
-// Optionally surface a few posts manually for now.
-// UPGRADE: (a) point a `blog.<domain>` subdomain at Hashnode, OR
-//          (b) pull posts live via the Hashnode GraphQL API and map them here.
-const posts: { title: string; href: string; date?: string }[] = [];
-
 export default function BlogPage() {
-  const hasPublication = hashnodeUrl && hashnodeUrl !== "#";
-
   return (
     <main className="mx-auto max-w-prose px-8 py-14">
-      <header className="mb-8">
+      <header className="mb-10">
         <Eyebrow icon="blog" label="Blog" />
         <h1 className="font-display text-[clamp(44px,8vw,84px)] font-black leading-[0.98] tracking-[-0.02em]">
           Writing<span className="text-accent-fill">.</span>
         </h1>
         <p className="mt-4 max-w-[60ch] text-[15.5px] text-muted">
-          Notes on backend systems, ML, and what I learn shipping real software.
-          Posts live on Hashnode.
+          Write-ups from my own projects: what broke, why, and what I check now.
         </p>
       </header>
 
-      <div className="mt-8">
-        {hasPublication ? (
-          <a
-            href={hashnodeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-md border border-ink bg-ink px-[22px] py-[13px] font-mono text-xs uppercase tracking-[0.06em] text-bg transition-colors hover:border-accent hover:bg-accent hover:text-white"
-          >
-            Read on Hashnode →
-          </a>
-        ) : (
-          <p className="rounded-lg border border-dashed border-line px-5 py-6 font-mono text-xs uppercase tracking-[0.08em] text-muted">
-            Publication link coming soon. See content/TODO.md
-          </p>
-        )}
-      </div>
-
-      {posts.length > 0 && (
-        <ul className="mt-12 border-t border-line">
-          {posts.map((post) => (
-            <li key={post.href} className="border-b border-line py-5">
-              <a
-                href={post.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-display text-xl font-semibold tracking-[-0.01em] transition-colors hover:text-accent"
-              >
-                {post.title}
-              </a>
-              {post.date && (
-                <div className="mt-1 font-mono text-[11px] text-muted">
-                  {post.date}
+      <Reveal>
+        <ol className="border-b border-line">
+          {posts.map((p, i) => {
+            const meta = p.external
+              ? `${p.external.platform} ↗`
+              : `${renderPost(p.slug).minutes} min`;
+            const inner = (
+              <div className="grid grid-cols-[2.2rem_1fr] gap-x-4 gap-y-1 py-6 sm:grid-cols-[2.6rem_1fr_auto] sm:items-baseline">
+                <span className="font-mono text-[12px] text-muted">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="min-w-0">
+                  <h2 className="font-display text-[clamp(19px,2.3vw,23px)] font-semibold leading-[1.3] tracking-[-0.01em] transition-colors group-hover:text-accent">
+                    {p.title}
+                  </h2>
+                  <p
+                    className="post-inline mt-1.5 text-[14.5px] leading-relaxed text-muted"
+                    dangerouslySetInnerHTML={{ __html: renderInline(p.subtitle) }}
+                  />
                 </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+                <div className="col-start-2 mt-2 flex items-center gap-3 font-mono text-[11px] text-muted sm:col-start-auto sm:mt-0 sm:justify-end">
+                  <span className="rounded-full border border-line px-2 py-[2px] uppercase tracking-[0.06em]">
+                    {p.tag}
+                  </span>
+                  <span className="whitespace-nowrap">{meta}</span>
+                  <span className="hidden whitespace-nowrap md:inline">{formatDate(p.date)}</span>
+                </div>
+              </div>
+            );
+            return (
+              <li key={p.slug} className="border-t border-line">
+                {p.external ? (
+                  <a href={p.external.url} target="_blank" rel="noopener noreferrer" className="group block">
+                    {inner}
+                  </a>
+                ) : (
+                  <Link href={`/blog/${p.slug}/`} className="group block">
+                    {inner}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </Reveal>
     </main>
   );
 }
