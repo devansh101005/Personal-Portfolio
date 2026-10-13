@@ -29,6 +29,12 @@ export const posts: BlogPost[] = [
       "`torch.set_num_threads(1)` doesn't pin ONNX Runtime: a latency bug I caught before publication",
     date: "2026-10-13",
     tag: "ML Systems",
+    alsoOn: [
+      {
+        url: "https://medium.com/@devanshpandeyji4321/my-single-thread-benchmark-was-using-28-threads-f3cd9277c9ee",
+        platform: "Medium",
+      },
+    ],
   },
   {
     slug: "client-server-architecture-for-beginners",

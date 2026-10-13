@@ -3,6 +3,7 @@
 import { readFileSync } from "fs";
 import path from "path";
 import { Marked, type Tokens } from "marked";
+import { SITE_URL } from "./site";
 
 export interface TocItem {
   id: string;
@@ -56,9 +57,10 @@ export function renderPost(slug: string): RenderedPost {
       },
       image({ href, text }: Tokens.Image) {
         // Markdown keeps the author's relative paths (images/x.png); the site
-        // serves pre-converted WebP from /public/blog/<slug>/.
+        // serves pre-converted WebP from /public/blog/<slug>/. Absolute URLs so
+        // importers (Medium's "Import a story") can fetch them.
         const src = /^images\//.test(href)
-          ? `/blog/${slug}/${href.replace(/^images\//, "").replace(/\.(png|jpe?g)$/i, ".webp")}`
+          ? `${SITE_URL}/blog/${slug}/${href.replace(/^images\//, "").replace(/\.(png|jpe?g)$/i, ".webp")}`
           : href;
         const alt = text.replace(/"/g, "&quot;");
         return `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" width="1600" height="900">`;
