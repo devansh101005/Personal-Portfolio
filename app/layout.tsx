@@ -1,33 +1,41 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import ResumeRequest from "@/components/ResumeRequest";
 import { SITE, SITE_URL, SOCIALS } from "@/lib/site";
 
-// §2 typography — Fraunces (display, weights 600 + 900 via CSS, high optical
-// size), Inter (body/UI), JetBrains Mono (labels). next/font for zero CLS.
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: "variable", // variable font; opsz axis requires weight be "variable". 600/900 applied via CSS.
-  axes: ["opsz"],
+// §2 typography — Fraunces (display, variable weight + optical-size axis),
+// Inter (body/UI), JetBrains Mono (labels). Self-hosted from app/fonts (the
+// Google Fonts latin files) so builds never depend on fetching from Google:
+// a Cloudflare build failed when Google served unexpected font URLs.
+// next/font/local still preloads them and adds size-matched fallbacks (no CLS).
+const fraunces = localFont({
+  src: "./fonts/fraunces-latin.woff2",
+  weight: "100 900", // variable; 600/900 applied via CSS, opsz is automatic
+  style: "normal",
   variable: "--font-display",
   display: "swap",
+  adjustFontFallback: "Times New Roman",
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+const inter = localFont({
+  src: "./fonts/inter-latin.woff2",
+  weight: "400 600",
+  style: "normal",
   variable: "--font-sans",
   display: "swap",
+  adjustFontFallback: "Arial",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const jetbrainsMono = localFont({
+  src: "./fonts/jetbrains-mono-latin.woff2",
+  weight: "400 500",
+  style: "normal",
   variable: "--font-mono",
   display: "swap",
+  adjustFontFallback: "Arial",
 });
 
 // §10 — everything absolute flows through NEXT_PUBLIC_SITE_URL (metadataBase),

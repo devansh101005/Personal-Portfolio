@@ -1,33 +1,30 @@
+import { readFile } from "fs/promises";
+import path from "path";
+
 /**
- * Loads a Google font as a TTF ArrayBuffer for use in ImageResponse (Satori
- * needs ttf/otf/woff — not woff2). The old MSIE User-Agent makes Google serve
- * truetype. Returns null on any failure so OG generation never breaks the build
- * (it falls back to the default font).
+ * Fonts for ImageResponse (Satori needs ttf/otf/woff, not woff2). Bundled in
+ * app/fonts/og (downloaded once from Google Fonts) so building the share
+ * images never depends on reaching Google: a Cloudflare build broke when
+ * Google served unexpected font URLs. Returns null on failure so OG
+ * generation falls back to a default font instead of breaking the build.
+ * (Name kept for the existing call sites; `text` is no longer needed.)
  */
+const OG_FONTS: Record<string, string> = {
+  "Fraunces:900": "fraunces-900.woff",
+  "JetBrains Mono:500": "jetbrains-mono-500.woff",
+};
+
 export async function loadGoogleFont(
   family: string,
   weight: number,
-  text: string
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _text?: string
 ): Promise<ArrayBuffer | null> {
+  const file = OG_FONTS[`${family}:${weight}`];
+  if (!file) return null;
   try {
-    const url = `https://fonts.googleapis.com/css2?family=${family.replace(
-      / /g,
-      "+"
-    )}:wght@${weight}&text=${encodeURIComponent(text)}`;
-    const css = await (
-      await fetch(url, {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
-        },
-      })
-    ).text();
-    // Satori supports woff/ttf/otf (not woff2). Google returns woff for subset requests.
-    const match = css.match(/src:\s*url\(([^)]+)\)\s*format\('(?:woff|truetype|opentype)'\)/);
-    if (!match) return null;
-    const fontRes = await fetch(match[1]);
-    if (!fontRes.ok) return null;
-    return await fontRes.arrayBuffer();
+    const buf = await readFile(path.join(process.cwd(), "app", "fonts", "og", file));
+    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
   } catch {
     return null;
   }
