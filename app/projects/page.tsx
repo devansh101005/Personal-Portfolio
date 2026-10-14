@@ -103,7 +103,7 @@ export default function ProjectsPage() {
         <GroupHeader
           label="Hackathon"
           title="Hackathon build"
-          blurb="Built in four days with a team of three, for HCL's hackathon. I was the captain and wrote the code."
+          blurb="Built in four days with a team of three, for HCL's hackathon. I was the team captain."
         />
         <FullGrid items={hackathonProjects} />
       </section>

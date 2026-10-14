@@ -314,6 +314,7 @@ export const projects: Project[] = [
     oneLiner:
       "A learning-path recommender that plans over a skill graph instead of searching course text. It never puts a course in front of you before you're ready for it.",
     status: "built",
+    githubUrl: "https://github.com/devansh101005/Waypoint",
     period: "Aug 2026",
     image: {
       src: "/projects/waypoint/cover.webp",
@@ -332,10 +333,10 @@ export const projects: Project[] = [
     highlights: [
       "0% prerequisite violations vs 49% for similarity search, on 9 paths written by hand by a human expert.",
       "Closes 93% of the learner's skill gap vs 65%, and agrees with the expert's ordering far more (Kendall tau 0.459 vs 0.111).",
-      "I was the team captain and wrote all of the code in four days, with 181 tests.",
+      "Built in four days by a team of three, with 181 tests. I was the team captain.",
     ],
     overview:
-      "Round 2 of HCL's hackathon asked for an AI learning-path recommender: understand a learner's goal and background, recommend courses, put them in a sensible order, explain each step, and adapt as they make progress.\n\nWe were a team of three. I was the captain and wrote all the code. My two teammates curated the course catalogue (65 skills, 126 resources) and wrote the expert learning paths we evaluated against. I helped with the catalogue too. We weren't shortlisted for the final pitch round, but I'm proud of how it turned out.",
+      "Round 2 of HCL's hackathon asked for an AI learning-path recommender: understand a learner's goal and background, recommend courses, put them in a sensible order, explain each step, and adapt as they make progress.\n\nWe were a team of three and I was the captain. My two teammates curated the course catalogue (65 skills, 126 resources) and wrote the expert learning paths we evaluated against. I helped with the catalogue too. We weren't shortlisted for the final pitch round, but I'm proud of how it turned out.",
     problem:
       "Course platforms have thousands of good courses, but learners struggle with the order. The usual approach ranks courses by how similar they are to the goal text, which happily puts an advanced course in front of someone who hasn't learned the basics yet.",
     approach:
