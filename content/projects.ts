@@ -314,6 +314,7 @@ export const projects: Project[] = [
     oneLiner:
       "A learning-path recommender that plans over a skill graph instead of searching course text. It never puts a course in front of you before you're ready for it.",
     status: "built",
+    liveUrl: "https://waypoint-six-teal.vercel.app",
     githubUrl: "https://github.com/devansh101005/Waypoint",
     period: "Aug 2026",
     image: {
