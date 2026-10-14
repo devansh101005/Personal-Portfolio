@@ -43,6 +43,12 @@ export default function ProjectCard({ p, priority = false }: { p: Project; prior
             </span>
           )}
         </div>
+        {p.event && (
+          <div className="mb-1.5 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.08em] text-muted">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />
+            {p.event}
+          </div>
+        )}
         <div className="font-display text-2xl font-semibold tracking-[-0.01em]">
           {p.name}
         </div>

@@ -47,7 +47,7 @@ export interface Experience {
 
 // Projects are organized by tier/seriousness, NOT by tech domain (§5).
 // Domain is shown as a tag on each card, never as a section.
-export type ProjectGroup = "production" | "experiment" | "personal-tool" | "guided";
+export type ProjectGroup = "production" | "hackathon" | "experiment" | "personal-tool" | "guided";
 export type ProjectStatus = "live" | "built" | "in-progress";
 
 /**
@@ -72,6 +72,7 @@ export interface Project {
   group: ProjectGroup;
   domainTag: string; // "Full-stack", "Distributed Systems", "GenAI", "ML Research", …
   guided?: boolean; // Group D — renders the "GUIDED BUILD" marker
+  event?: string; // hackathon context, e.g. "HCL hackathon · Round 2 · team of 3"
 
   // ── short card fields (leave empty until filled) ──
   oneLiner: string; // "what it does — problem it solves"

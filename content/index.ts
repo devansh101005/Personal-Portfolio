@@ -8,6 +8,7 @@ export { publications, getPublicationForProject } from "./publications";
 export {
   projects,
   productionProjects,
+  hackathonProjects,
   experimentProjects,
   personalToolProjects,
   guidedProjects,

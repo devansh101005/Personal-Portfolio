@@ -5,6 +5,7 @@ import ProjectCard from "@/components/ProjectCard";
 import CompactProjectCard from "@/components/CompactProjectCard";
 import {
   productionProjects,
+  hackathonProjects,
   experimentProjects,
   personalToolProjects,
   guidedProjects,
@@ -14,7 +15,7 @@ import type { Project } from "@/content/types";
 export const metadata: Metadata = {
   title: "Projects",
   description:
-    "Projects by Devansh: shipped products and original systems, experiments, a personal tool, and guided learning builds.",
+    "Projects by Devansh: shipped products and original systems, a hackathon build, experiments, a personal tool, and guided learning builds.",
   alternates: { canonical: "/projects" },
   openGraph: {
     title: "Projects · Devansh",
@@ -82,8 +83,8 @@ export default function ProjectsPage() {
         </h1>
         <p className="mt-4 max-w-[60ch] text-[15.5px] text-muted">
           Grouped by what each one is. Shipped products and my own systems come
-          first, then experiments, a tool I built for myself, and the guided
-          builds I did while learning.
+          first, then a hackathon build, experiments, a tool I built for myself,
+          and the guided builds I did while learning.
         </p>
       </header>
 
@@ -95,6 +96,16 @@ export default function ProjectsPage() {
           blurb="Shipped products and systems I designed myself. This is the work I'd put my name on."
         />
         <FullGrid items={productionProjects} />
+      </section>
+
+      {/* Hackathon */}
+      <section className="border-t border-line py-14">
+        <GroupHeader
+          label="Hackathon"
+          title="Hackathon build"
+          blurb="Built in four days with a team of three, for HCL's hackathon. I was the captain and wrote the code."
+        />
+        <FullGrid items={hackathonProjects} />
       </section>
 
       {/* Group B */}

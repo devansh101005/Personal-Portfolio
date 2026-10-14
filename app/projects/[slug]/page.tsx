@@ -11,6 +11,7 @@ type Params = { params: Promise<{ slug: string }> };
 
 const groupLabel: Record<ProjectGroup, string> = {
   production: "Production & Systems",
+  hackathon: "Hackathon",
   experiment: "Experiment",
   "personal-tool": "Personal tool",
   guided: "Guided build",
@@ -165,7 +166,7 @@ export default async function ProjectDetail({ params }: Params) {
       <header className="mt-8 border-b border-line pb-12">
         <div className="mb-4 flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
           <span className="text-accent">{p.domainTag}</span>
-          <span>· {groupLabel[p.group]}</span>
+          <span>· {p.event ?? groupLabel[p.group]}</span>
           {p.status && <span>· {statusLabel[p.status]}</span>}
           {p.period && <span>· {p.period}</span>}
         </div>

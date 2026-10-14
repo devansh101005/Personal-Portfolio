@@ -301,6 +301,84 @@ export const projects: Project[] = [
       "Retrieval, 24 test queries, recall@5: vector only 0.50, keyword only 0.49, hybrid 0.64, hybrid + rerank 0.69. The reranker isn't free though. It's about 0.8s per query while every other stage is under 20ms, and it slightly lowered MRR.\n\nFull answers, 30 questions graded by hand: 14 good, 7 partial, 2 wrong, 6 correctly refused (the answer wasn't in the documents), and 1 wrongly refused. The backend works end to end. The frontend isn't built yet."
   },
 
+  // ──────────── Hackathon builds ────────────
+  // Verified from the repo (E:/HCL Amplified Code → github.com/devansh101005/Waypoint),
+  // eval-results/eval.md, eval-results/tests.json and the build chat.
+  // Result, honestly: Round 2 submission, not shortlisted for the Top 25 pitch.
+  {
+    slug: "waypoint",
+    name: "Waypoint",
+    group: "hackathon",
+    domainTag: "AI · Full-stack",
+    event: "HCL hackathon · Round 2 · team of 3",
+    oneLiner:
+      "A learning-path recommender that plans over a skill graph instead of searching course text. It never puts a course in front of you before you're ready for it.",
+    status: "built",
+    period: "Aug 2026",
+    image: {
+      src: "/projects/waypoint/cover.webp",
+      alt: "Waypoint landing page: every course is a station, learning is the line between",
+      caption: "The landing page. Courses are stations and a learning path is the line between them.",
+    },
+    stack: [
+      "Next.js",
+      "TypeScript",
+      "Postgres + pgvector",
+      "Drizzle",
+      "Cohere embeddings + rerank",
+      "Zod",
+      "Vitest",
+    ],
+    highlights: [
+      "0% prerequisite violations vs 49% for similarity search, on 9 paths written by hand by a human expert.",
+      "Closes 93% of the learner's skill gap vs 65%, and agrees with the expert's ordering far more (Kendall tau 0.459 vs 0.111).",
+      "I was the team captain and wrote all of the code in four days, with 181 tests.",
+    ],
+    overview:
+      "Round 2 of HCL's hackathon asked for an AI learning-path recommender: understand a learner's goal and background, recommend courses, put them in a sensible order, explain each step, and adapt as they make progress.\n\nWe were a team of three. I was the captain and wrote all the code. My two teammates curated the course catalogue (65 skills, 126 resources) and wrote the expert learning paths we evaluated against. I helped with the catalogue too. We weren't shortlisted for the final pitch round, but I'm proud of how it turned out.",
+    problem:
+      "Course platforms have thousands of good courses, but learners struggle with the order. The usual approach ranks courses by how similar they are to the goal text, which happily puts an advanced course in front of someone who hasn't learned the basics yet.",
+    approach:
+      "I treated it as a planning problem instead of a search problem. A learner is a vector of skill levels, a goal becomes a target skill state, and the path is a sequence of courses that closes the gap in the fewest hours while respecting prerequisites. The language model only reads your goal into structured skills and phrases the explanations. It never picks or orders a course.",
+    architecture: [
+      "Beam search over the prerequisite graph. The graph decides which courses are even allowed as the next step, so an out-of-order step can't be generated. That's why the violation rate is 0%, by construction.",
+      "Hybrid retrieval scored against the learner's skill gap, not their query: skill-tag overlap, Cohere `embed-v4.0` embeddings and lexical match, with an optional `rerank-v3.5` stage.",
+      "Every step carries a reasons object built by the planner (what it closes, what it unlocks, difficulty fit, hours). The LLM only turns that into a sentence, so explanations can't be made up.",
+      "Conversational intake: the LLM's output is validated with Zod against the skill graph's own names, so it can't invent a skill that doesn't exist.",
+      "Feedback (\"I finished this\", \"I struggled here\") updates the learner's skill levels and replans the route, showing what changed.",
+      "Runs with no database and no API keys: the corpus loads from CSV and learner state lives in memory, so a reviewer can try it instantly. Postgres + pgvector kicks in when configured.",
+    ],
+    outcomes:
+      "Evaluated against a similarity-search baseline on 9 expert-written paths, with the same corpus and the same embeddings: prerequisite violations 0% vs 49%, skill gap closed 93% vs 65%, redundant effort 16.8% vs 36.3%, nDCG 0.392 vs 0.168, ordering agreement (Kendall tau) 0.459 vs 0.111. One of the 10 test goals (\"I want to work with AI\") was too vague to plan, so the intake asked a clarifying question instead of guessing.",
+    gallery: [
+      {
+        src: "/projects/waypoint/side-by-side.webp",
+        alt: "The same learner routed by Waypoint and by similarity search, side by side",
+        caption: "The same learner routed two ways. Similarity search puts courses in front of them before they're ready; Waypoint's route never does.",
+      },
+      {
+        src: "/projects/waypoint/metrics.webp",
+        alt: "Evaluation results against the similarity baseline",
+        caption: "The evaluation page, computed from the committed eval run.",
+      },
+      {
+        src: "/projects/waypoint/route-reasoning.webp",
+        alt: "A route with the reasoning for one step expanded",
+        caption: "Each step explains itself: which skills it closes, what it opens up, and how hard it is for you.",
+      },
+      {
+        src: "/projects/waypoint/intake.webp",
+        alt: "Conversational intake turning a goal into a learner profile",
+        caption: "Describe your goal in plain words. The profile fills in as you talk.",
+      },
+      {
+        src: "/projects/waypoint/dashboard.webp",
+        alt: "Learner dashboard with progress and the next step",
+        caption: "The dashboard: where you are, what's left, and the next stop.",
+      },
+    ],
+  },
+
   // ──────────── Group B — Experiments ────────────
   {
     slug: "whatsapp-chat-analysis",
@@ -522,6 +600,7 @@ export const projects: Project[] = [
 ];
 
 export const productionProjects = projects.filter((p) => p.group === "production");
+export const hackathonProjects = projects.filter((p) => p.group === "hackathon");
 export const experimentProjects = projects.filter((p) => p.group === "experiment");
 export const personalToolProjects = projects.filter((p) => p.group === "personal-tool");
 export const guidedProjects = projects.filter((p) => p.group === "guided");
