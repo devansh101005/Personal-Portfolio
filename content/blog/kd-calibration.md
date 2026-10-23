@@ -4,7 +4,7 @@
 
 ![Three teachers, same distillation recipe. D-Vlog 5-Perceiver ensemble: stronger and well calibrated (ECE 0.020), recall +10.4. LMVD Gimeno-Gómez: stronger but overconfident (ECE 0.091), recall -5.4. LMVD MMFformer: neither (ECE 0.112), recall +2.1](images/kd-three-teachers.png)
 
-LightDep is a small model that screens for depression risk from face landmarks and audio features in short videos, small enough to run on a phone. I worked on it with Prateek Goyal (we're joint first authors) and three senior co-authors, and the paper was accepted at IEEE ANTS 2026. To get a small model to perform well, we used knowledge distillation: train the small "student" to imitate a bigger "teacher". We used one recipe on two public datasets. On the first it did nothing useful. On the second it gave a large, repeatable gain.
+LightDep is a small model that screens for depression risk from face landmarks and audio features in short videos, small enough to run on a phone. The paper was accepted at IEEE ANTS 2026. To get a small model to perform well, we used knowledge distillation: train the small "student" to imitate a bigger "teacher". We used one recipe on two public datasets. On the first it did nothing useful. On the second it gave a large, repeatable gain.
 
 The part that surprised me most: on the dataset where it worked, the teacher was less accurate than the student we were trying to improve. This post is about why, and what I now check before distilling from any teacher.
 
