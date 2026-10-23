@@ -498,6 +498,9 @@ body::before {
   text-transform: uppercase;
   color: var(--muted);
   border-bottom-color: var(--border-strong);
+  /* Long headers wrap so every column fits; cells stay on one line. */
+  white-space: normal;
+  vertical-align: bottom;
 }
 .post-body blockquote {
   border-left: 2px solid var(--accent);

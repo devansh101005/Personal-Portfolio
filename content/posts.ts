@@ -23,6 +23,14 @@ export interface BlogPost {
 
 export const posts: BlogPost[] = [
   {
+    slug: "kd-calibration",
+    title: "The Teacher Was Less Accurate Than the Student. Distillation Still Helped.",
+    subtitle:
+      "Same recipe, two datasets, opposite results, and what the teacher's confidence had to do with it",
+    date: "2026-10-23",
+    tag: "ML Research",
+  },
+  {
     slug: "onnx-threads-latency",
     title: "My “single-thread” benchmark was using 28 threads",
     subtitle:
